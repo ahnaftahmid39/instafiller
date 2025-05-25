@@ -10,13 +10,25 @@ import {
 } from "./session.js";
 import { processImages } from "./ocrProcessor.js";
 import { fillForm } from "./formFiller.js";
-import { uiElements, updateButtonStates, updateImageThumbnails } from "./ui.js";
+import { uiElements, updateButtonStates } from "./ui.js";
 import { clearSelectedImages, getSelectedImages } from "./imageHandler.js";
 import { stopMobileSession } from "./mobileCapture.js"; // Import stopMobileSession
 
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize the application session
   initializeSession();
+
+  // Set up file upload area click handler
+  const fileUploadArea = document.getElementById("file-upload-area");
+  const imageInput = document.getElementById("image-input");
+
+  if (fileUploadArea && imageInput) {
+    fileUploadArea.addEventListener("click", (e) => {
+      if (e.target === imageInput) return; // Don't trigger if clicking the input itself
+      e.preventDefault();
+      imageInput.click();
+    });
+  }
 
   // Event Listeners for UI Elements
   uiElements.extensionToggle.addEventListener("change", (event) => {

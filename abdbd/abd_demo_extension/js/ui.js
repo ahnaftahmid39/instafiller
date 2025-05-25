@@ -28,6 +28,49 @@ export const uiElements = {
   stopMobileBtn: document.getElementById("stop-mobile-btn"),
 };
 
+// Add this function at the beginning of the file
+export function initializeUIElements() {
+  // Check if all required elements exist
+  const requiredElements = [
+    "image-input",
+    "image-thumbnails",
+    "process-images-btn",
+    "fill-form-btn",
+    "new-session-btn",
+    "response-container",
+    "extension-toggle",
+    "extension-status",
+    "status-dot",
+    "ocr-count",
+    "ocr-data-display",
+    "total-sessions-info",
+    "progress-container",
+    "progress-fill",
+    "progress-text",
+    "computer-option",
+    "mobile-option",
+    "computer-upload",
+    "mobile-upload",
+    "mobile-photo-btn",
+    "qr-container",
+    "qr-code",
+    "mobile-status",
+    "mobile-session-info",
+    "mobile-photos",
+    "stop-mobile-btn",
+  ];
+
+  const missingElements = requiredElements.filter(
+    (id) => !document.getElementById(id)
+  );
+
+  if (missingElements.length > 0) {
+    console.warn("Missing UI elements:", missingElements);
+  }
+
+  return missingElements.length === 0;
+}
+
 export function showProgress(show, text = "Processing...") {
   if (show) {
     uiElements.progressContainer.style.display = "block";
@@ -58,10 +101,38 @@ export function showProgress(show, text = "Processing...") {
   }
 }
 
-export function showMessage(message, color) {
+export function showMessage(message, color, type = "info") {
+  // Show the status container
+  uiElements.responseContainer.style.display = "block";
   uiElements.responseContainer.textContent = message;
   uiElements.responseContainer.style.color = color;
   uiElements.responseContainer.style.borderLeftColor = color;
+
+  // Remove existing status classes
+  uiElements.responseContainer.classList.remove(
+    "success",
+    "error",
+    "warning",
+    "info"
+  );
+
+  // Add appropriate status class based on color or type
+  if (color === "#059669" || type === "success") {
+    uiElements.responseContainer.classList.add("success");
+  } else if (color === "#ef4444" || type === "error") {
+    uiElements.responseContainer.classList.add("error");
+  } else if (color === "#d97706" || type === "warning") {
+    uiElements.responseContainer.classList.add("warning");
+  } else if (color === "#2563eb" || type === "info") {
+    uiElements.responseContainer.classList.add("info");
+  }
+
+  // Auto-hide after 5 seconds for non-error messages
+  if (type !== "error" && color !== "#ef4444") {
+    setTimeout(() => {
+      uiElements.responseContainer.style.display = "none";
+    }, 5000);
+  }
 }
 
 export function updateExtensionStatus(extensionEnabled) {
@@ -85,7 +156,12 @@ export async function updateOcrDataDisplay(sessionId) {
     uiElements.ocrCount.textContent = `${sessionData.length} items`;
 
     if (sessionData.length === 0) {
-      uiElements.ocrDataDisplay.textContent = "No OCR data stored";
+      uiElements.ocrDataDisplay.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📄</div>
+          <div class="empty-state-text">No OCR data stored</div>
+        </div>
+      `;
     } else {
       uiElements.ocrDataDisplay.innerHTML = "";
       sessionData.forEach((item, index) => {
@@ -174,13 +250,12 @@ export function updateMobileUI(isSessionActive) {
   }
 }
 
-// --- NEW FUNCTION TO EXPORT ---
-/**
- * Updates the display of image thumbnails.
- * @param {Array<Object>} images - An array of image objects, each with id, dataUrl, and name.
- * @param {Function} onRemove - Callback function when an image is removed.
- */
-export function updateImageThumbnails(images, onRemove) {
+export function updateImageThumbnails(images = [], onRemove = null) {
+  if (!uiElements.imageThumbnails) {
+    console.error("Image thumbnails container not found");
+    return;
+  }
+
   uiElements.imageThumbnails.innerHTML = ""; // Clear existing thumbnails
 
   if (images.length === 0) {
@@ -195,18 +270,29 @@ export function updateImageThumbnails(images, onRemove) {
     thumbnail.src = image.dataUrl;
     thumbnail.alt = image.name;
     thumbnail.className = "image-thumbnail";
+    thumbnail.title = `${image.name} ${
+      image.fromMobile ? "(Mobile)" : "(Computer)"
+    }`;
 
     const removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
-    removeBtn.textContent = "X";
-    removeBtn.onclick = () => onRemove(image.id); // Use the provided onRemove callback
+    removeBtn.textContent = "×";
+    removeBtn.onclick = (e) => {
+      e.stopPropagation();
+      if (onRemove) {
+        onRemove(image.id);
+      }
+    };
+
+    if (image.fromMobile) {
+      thumbnail.style.border = "2px solid #8b5cf6";
+    }
 
     imageContainer.appendChild(thumbnail);
     imageContainer.appendChild(removeBtn);
     uiElements.imageThumbnails.appendChild(imageContainer);
   });
 }
-// --- END NEW FUNCTION ---
 
 // Listen for progress updates from background script
 window.chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

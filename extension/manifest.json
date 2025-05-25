@@ -7,7 +7,7 @@
   "permissions": ["scripting", "activeTab", "sidePanel"],
   "host_permissions": ["<all_urls>"],
   "side_panel": {
-    "default_path": "index.html"
+    "default_path": "sidepanel.html"
   },
   "background": {
     "service_worker": "service-worker.js"

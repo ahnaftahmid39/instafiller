@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Form Filler</title>
+    <link rel="stylesheet" href="sidebar.css" />
+</head>
+<body>
+    <h1>🤖 Smart Form Filler</h1>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">Extension Control</span>
+            <div class="status-indicator">
+                <div id="status-dot" class="status-dot"></div>
+                <span id="extension-status" class="status-text">Enabled</span>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span>Enable/Disable Extension:</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="extension-toggle" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">Session Management</span>
+        </div>
+        <button id="new-session-btn" class="btn-warning">
+            🔄 New Session (Clear All Data)
+        </button>
+        <div id="total-sessions-info" class="total-sessions-info"></div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">📷 Image Upload</span>
+        </div>
+        
+        <div class="upload-options">
+            <div class="upload-option active" id="computer-option">
+                <div>💻</div>
+                <div>Computer</div>
+            </div>
+            <div class="upload-option" id="mobile-option">
+                <div>📱</div>
+                <div>Mobile</div>
+            </div>
+        </div>
+        
+        <div id="computer-upload">
+            <label for="image-input">Upload Images from Computer:</label>
+            <input type="file" id="image-input" accept="image/*" multiple />
+        </div>
+        
+        <div id="mobile-upload" style="display: none;">
+            <button id="mobile-photo-btn" class="btn-mobile">
+                📱 Get Photos from Mobile
+            </button>
+            
+            <div id="qr-container" class="qr-container">
+                <h3>📱 Scan QR Code with Your Phone</h3>
+                <div id="qr-code" class="qr-code"></div>
+                <div class="mobile-status">
+                    <div id="mobile-status">Waiting for mobile connection...</div>
+                    <div id="mobile-session-info"></div>
+                </div>
+                <div id="mobile-photos" class="mobile-photos"></div>
+                <button id="stop-mobile-btn" class="btn-danger" style="margin-top: 12px;">Stop Mobile Session</button>
+            </div>
+        </div>
+        
+        <div id="image-thumbnails" class="image-thumbnails"></div>
+        
+        <div id="progress-container" class="progress-container">
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+                <div id="progress-text" class="progress-text">0%</div>
+            </div>
+        </div>
+        
+        <button id="process-images-btn" class="btn-primary" disabled>
+            🔍 Process Images (OCR)
+        </button>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">💾 Stored OCR Data</span>
+            <span id="ocr-count" class="count-text">0 items</span>
+        </div>
+        <div id="ocr-data-display" class="ocr-data-display">
+            No OCR data stored
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header">
+            <span class="section-title">📝 Form Filling</span>
+        </div>
+        <button id="fill-form-btn" class="btn-success" disabled>
+            ✨ Fill Form with OCR Data
+        </button>
+    </div>
+
+    <div id="response-container" class="response-container"></div>
+
+   <script type="module" src="js/constants.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/session.js"></script>
+    <script type="module" src="js/imageHandler.js"></script>
+    <script type="module" src="js/ocrProcessor.js"></script>
+    <script type="module" src="js/formFiller.js"></script>
+    <script type="module" src="js/mobileCapture.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+</body>
+</html>

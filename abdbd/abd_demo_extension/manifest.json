@@ -1,0 +1,33 @@
+{
+    "$schema": "https://json.schemastore.org/chrome-manifest",
+    "manifest_version": 3,
+    "name": "Smart Form Filler (OCR & AI)",
+    "version": "2.0",
+    "description": "Fills forms automatically using OCR data and AI mapping from uploaded images with multi-photo support.",
+    "permissions": ["scripting", "activeTab", "storage", "sidePanel"],
+    "host_permissions": [
+        "<all_urls>",
+        "https://generativelanguage.googleapis.com/",
+        "https://localhost:3443/*",     
+        "https://192.168.0.155:3443/*"    
+    ],
+    "action": {
+        "default_title": "Smart Form Filler"
+    },
+    "side_panel": {
+        "default_path": "sidebar.html"
+    },
+    "icons": {
+        "16": "cat.png",
+        "32": "cat.png",
+        "48": "cat.png",
+        "128": "cat.png",
+        "256": "cat.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self';"
+    }
+}

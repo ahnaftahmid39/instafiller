@@ -26,6 +26,11 @@ export const uiElements = {
   mobileSessionInfo: document.getElementById("mobile-session-info"),
   mobilePhotos: document.getElementById("mobile-photos"),
   stopMobileBtn: document.getElementById("stop-mobile-btn"),
+  // Form detection elements
+  detectFieldsBtn: document.getElementById("detect-fields-btn"),
+  formFieldsDisplay: document.getElementById("form-fields-display"),
+  formFieldsCount: document.getElementById("form-fields-count"),
+  fillDetectedFieldsBtn: document.getElementById("fill-detected-fields-btn"),
 };
 
 // Add this function at the beginning of the file
@@ -58,6 +63,10 @@ export function initializeUIElements() {
     "mobile-session-info",
     "mobile-photos",
     "stop-mobile-btn",
+    "detect-fields-btn",
+    "form-fields-display",
+    "form-fields-count",
+    "fill-detected-fields-btn",
   ];
 
   const missingElements = requiredElements.filter(
@@ -213,6 +222,98 @@ export async function updateOcrDataDisplay(sessionId) {
   }
 }
 
+export function updateFormFieldsDisplay(fields) {
+  if (!uiElements.formFieldsDisplay || !uiElements.formFieldsCount) {
+    console.warn("Form fields display elements not found");
+    return;
+  }
+
+  uiElements.formFieldsCount.textContent = `${fields.length} fields`;
+
+  if (fields.length === 0) {
+    uiElements.formFieldsDisplay.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📝</div>
+        <div class="empty-state-text">No form fields detected</div>
+      </div>
+    `;
+    if (uiElements.fillDetectedFieldsBtn) {
+      uiElements.fillDetectedFieldsBtn.disabled = true;
+    }
+  } else {
+    uiElements.formFieldsDisplay.innerHTML = "";
+    fields.forEach((field, index) => {
+      const div = document.createElement("div");
+      div.className = "form-field-item";
+
+      const header = document.createElement("div");
+      header.className = "form-field-header";
+
+      const title = document.createElement("div");
+      title.className = "form-field-title";
+      const fieldIcon = getFieldIcon(field.type);
+      title.textContent = `${fieldIcon} ${
+        field.label || field.name || field.id || `Field ${index + 1}`
+      }`;
+
+      const typeLabel = document.createElement("span");
+      typeLabel.className = "field-type-label";
+      typeLabel.textContent = field.type;
+
+      header.appendChild(title);
+      header.appendChild(typeLabel);
+
+      const details = document.createElement("div");
+      details.className = "form-field-details";
+      details.innerHTML = `
+        <strong>Type:</strong> ${field.type}<br>
+        ${
+          field.placeholder
+            ? `<strong>Placeholder:</strong> ${field.placeholder}<br>`
+            : ""
+        }
+        ${field.required ? `<strong>Required:</strong> Yes<br>` : ""}
+        ${
+          field.options.length > 0
+            ? `<strong>Options:</strong> ${field.options.length} choices<br>`
+            : ""
+        }
+        <strong>Selector:</strong> <code>${field.selector}</code>
+      `;
+
+      div.appendChild(header);
+      div.appendChild(details);
+      uiElements.formFieldsDisplay.appendChild(div);
+    });
+
+    if (uiElements.fillDetectedFieldsBtn) {
+      uiElements.fillDetectedFieldsBtn.disabled = false;
+    }
+  }
+}
+
+function getFieldIcon(fieldType) {
+  const icons = {
+    text: "📝",
+    email: "📧",
+    password: "🔒",
+    tel: "📞",
+    number: "🔢",
+    date: "📅",
+    time: "⏰",
+    url: "🔗",
+    search: "🔍",
+    textarea: "📄",
+    select: "📋",
+    checkbox: "☑️",
+    radio: "🔘",
+    file: "📁",
+    range: "🎚️",
+    color: "🎨",
+  };
+  return icons[fieldType] || "📝";
+}
+
 export async function updateTotalSessionsInfo() {
   try {
     const result = await window.chrome.storage.session.get(["ocrDataStore"]);
@@ -232,6 +333,9 @@ export async function updateTotalSessionsInfo() {
 export function updateButtonStates(hasImages, extensionEnabled, hasOcrData) {
   uiElements.processImagesBtn.disabled = !hasImages || !extensionEnabled;
   uiElements.fillFormBtn.disabled = !hasOcrData || !extensionEnabled;
+  if (uiElements.detectFieldsBtn) {
+    uiElements.detectFieldsBtn.disabled = !extensionEnabled;
+  }
 }
 
 export function updateMobileUI(isSessionActive) {

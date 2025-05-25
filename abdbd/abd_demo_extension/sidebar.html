@@ -49,6 +49,27 @@
         <div id="total-sessions-info" class="total-sessions-info"></div>
       </div>
 
+      <!-- Form Field Detection Section -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">🔍</span>
+            <span class="section-title">Form Field Detection</span>
+          </div>
+          <span id="form-fields-count" class="count-badge">0 fields</span>
+        </div>
+        <button id="detect-fields-btn" class="btn btn-primary">
+          <span class="btn-icon">🔍</span>
+          Detect Form Fields
+        </button>
+        <div id="form-fields-display" class="form-fields-display">
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <div class="empty-state-text">No form fields detected</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Image Upload Section -->
       <div class="section">
         <div class="section-header">
@@ -152,6 +173,15 @@
           <span class="btn-icon">✨</span>
           Fill Form with OCR Data
         </button>
+        <button
+          id="fill-detected-fields-btn"
+          class="btn btn-secondary"
+          disabled
+          style="margin-top: 8px"
+        >
+          <span class="btn-icon">🎯</span>
+          Fill Detected Fields
+        </button>
       </div>
 
       <div id="response-container" class="status" style="display: none"></div>
@@ -164,6 +194,7 @@
     <script type="module" src="js/ocrProcessor.js"></script>
     <script type="module" src="js/formFiller.js"></script>
     <script type="module" src="js/mobileCapture.js"></script>
+    <script type="module" src="js/formDetector.js"></script>
     <script type="module" src="js/sidebar.js"></script>
   </body>
 </html>

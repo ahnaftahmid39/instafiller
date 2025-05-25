@@ -1,5 +1,5 @@
 // js/mobileCapture.js
-import { uiElements, showMessage, updateMobileUI } from "./ui.js";
+import { uiElements, updateMobileUI } from "./ui.js";
 import { SERVER_URL } from "./constants.js";
 import { addImage } from "./imageHandler.js";
 import { processNewMobilePhoto } from "./ocrProcessor.js";
@@ -158,3 +158,10 @@ uiElements.stopMobileBtn.addEventListener("click", stopMobileSession);
 
 // Listen for a custom event to stop mobile session, triggered by new session
 document.addEventListener("stopMobileSession", stopMobileSession);
+
+function showMessage(message, color) {
+  // Implement showMessage function here
+  // This is a placeholder to satisfy the dependency
+  console.log(`showMessage: ${message}, color: ${color}`);
+}
+export { showMessage };

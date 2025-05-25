@@ -670,6 +670,87 @@ input:checked + .slider:before {
   transform: translateX(4px);
 }
 
+/* Form Fields Display */
+.form-fields-display {
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 14px;
+  color: #e8f5e8;
+  opacity: 0.9;
+}
+
+.form-field-item {
+  background: rgba(27, 94, 32, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.25);
+  border-radius: 14px;
+  padding: 18px;
+  margin: 14px 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.form-field-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%);
+  box-shadow: 0 0 10px rgba(33, 150, 243, 0.4);
+}
+
+.form-field-item:hover {
+  border-color: rgba(76, 175, 80, 0.4);
+  background: rgba(27, 94, 32, 0.25);
+  transform: translateX(6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.form-field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.form-field-title {
+  font-weight: 600;
+  color: #e8f5e8;
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.field-type-label {
+  background: rgba(33, 150, 243, 0.3);
+  color: #bbdefb;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(33, 150, 243, 0.4);
+}
+
+.form-field-details {
+  font-size: 12px;
+  color: #c8e6c9;
+  opacity: 0.75;
+  line-height: 1.6;
+}
+
+.form-field-details code {
+  background: rgba(27, 94, 32, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #a5d6a7;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
 /* OCR Data Display */
 .ocr-data-display {
   max-height: 320px;
@@ -843,16 +924,19 @@ input:checked + .slider:before {
 }
 
 /* Scrollbar Styling */
-.ocr-data-display::-webkit-scrollbar {
+.ocr-data-display::-webkit-scrollbar,
+.form-fields-display::-webkit-scrollbar {
   width: 8px;
 }
 
-.ocr-data-display::-webkit-scrollbar-track {
+.ocr-data-display::-webkit-scrollbar-track,
+.form-fields-display::-webkit-scrollbar-track {
   background: rgba(27, 94, 32, 0.2);
   border-radius: 4px;
 }
 
-.ocr-data-display::-webkit-scrollbar-thumb {
+.ocr-data-display::-webkit-scrollbar-thumb,
+.form-fields-display::-webkit-scrollbar-thumb {
   background: linear-gradient(
     135deg,
     rgba(76, 175, 80, 0.4) 0%,
@@ -861,7 +945,8 @@ input:checked + .slider:before {
   border-radius: 4px;
 }
 
-.ocr-data-display::-webkit-scrollbar-thumb:hover {
+.ocr-data-display::-webkit-scrollbar-thumb:hover,
+.form-fields-display::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     135deg,
     rgba(76, 175, 80, 0.6) 0%,

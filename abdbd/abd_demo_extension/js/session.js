@@ -23,6 +23,19 @@ export function getExtensionEnabled() {
   return extensionEnabled;
 }
 
+// Helper function to get current images count
+function getCurrentImagesCount() {
+  try {
+    // Import dynamically to avoid circular dependency
+    const { getSelectedImages } = require("./imageHandler.js");
+    return getSelectedImages().length > 0;
+  } catch (error) {
+    // Fallback: check if there are images in the thumbnails container
+    const thumbnails = document.getElementById("image-thumbnails");
+    return thumbnails && thumbnails.children.length > 0;
+  }
+}
+
 export async function initializeSession() {
   try {
     const result = await window.chrome.storage.session.get([
@@ -41,8 +54,11 @@ export async function initializeSession() {
 
     updateExtensionStatus(extensionEnabled);
     await updateOcrDataDisplay(currentSessionId);
+
+    // Check if there are already images selected
+    const hasImages = getCurrentImagesCount();
     updateButtonStates(
-      false,
+      hasImages,
       extensionEnabled,
       await hasOcrData(currentSessionId)
     );
@@ -74,6 +90,7 @@ export async function newSession() {
     document.dispatchEvent(new CustomEvent("clearSelectedImages"));
 
     await updateOcrDataDisplay(currentSessionId);
+    // After clearing, there should be no images
     updateButtonStates(false, extensionEnabled, false);
     showMessage("New session started - all data cleared!", "#059669");
   } catch (error) {
@@ -86,8 +103,11 @@ export async function toggleExtension(checked) {
   extensionEnabled = checked;
   await window.chrome.storage.session.set({ extensionEnabled });
   updateExtensionStatus(extensionEnabled);
+
+  // Check current images count when toggling
+  const hasImages = getCurrentImagesCount();
   updateButtonStates(
-    false,
+    hasImages,
     extensionEnabled,
     await hasOcrData(currentSessionId)
   );
@@ -110,8 +130,11 @@ export async function removeOcrDataItem(imageId) {
 
     await window.chrome.storage.session.set({ ocrDataStore });
     await updateOcrDataDisplay(currentSessionId);
+
+    // Check current images count when removing OCR data
+    const hasImages = getCurrentImagesCount();
     updateButtonStates(
-      false,
+      hasImages,
       extensionEnabled,
       await hasOcrData(currentSessionId)
     );

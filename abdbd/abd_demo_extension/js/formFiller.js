@@ -1,5 +1,6 @@
 // js/formFiller.js
 import { getSessionId, getExtensionEnabled, hasOcrData } from "./session.js";
+import { getSelectedImages } from "./imageHandler.js";
 import {
   uiElements,
   showProgress,
@@ -53,8 +54,10 @@ export async function fillForm() {
     showMessage(`Error: ${error.message}`, "#ef4444");
   } finally {
     showProgress(false);
+    // Preserve current images state when updating button states
+    const hasImages = getSelectedImages().length > 0;
     updateButtonStates(
-      false,
+      hasImages,
       getExtensionEnabled(),
       await hasOcrData(getSessionId())
     );
@@ -63,8 +66,9 @@ export async function fillForm() {
 
 // Update fill button state periodically
 setInterval(async () => {
+  const hasImages = getSelectedImages().length > 0;
   updateButtonStates(
-    false,
+    hasImages,
     getExtensionEnabled(),
     await hasOcrData(getSessionId())
   );

@@ -8,26 +8,34 @@ export function getSelectedImages() {
   return selectedImages;
 }
 
-export function clearSelectedImages() {
+export async function clearSelectedImages() {
   selectedImages = [];
   uiElements.imageInput.value = "";
   updateImageThumbnails();
-  updateButtonStates(false, getExtensionEnabled(), hasOcrData(getSessionId()));
+  updateButtonStates(
+    false,
+    getExtensionEnabled(),
+    await hasOcrData(getSessionId())
+  );
 }
 
-export function addImage(imageData) {
+export async function addImage(imageData) {
   selectedImages.push(imageData);
   updateImageThumbnails();
-  updateButtonStates(true, getExtensionEnabled(), hasOcrData(getSessionId()));
+  updateButtonStates(
+    true,
+    getExtensionEnabled(),
+    await hasOcrData(getSessionId())
+  );
 }
 
-export function removeSelectedImage(imageId) {
+export async function removeSelectedImage(imageId) {
   selectedImages = selectedImages.filter((img) => img.id !== imageId);
   updateImageThumbnails();
   updateButtonStates(
     selectedImages.length > 0,
     getExtensionEnabled(),
-    hasOcrData(getSessionId())
+    await hasOcrData(getSessionId())
   );
 }
 
@@ -58,15 +66,15 @@ export function updateImageThumbnails() {
 }
 
 // Event listener for image input
-uiElements.imageInput.addEventListener("change", (event) => {
+uiElements.imageInput.addEventListener("change", async (event) => {
   const files = Array.from(event.target.files);
 
   if (files.length === 0) return;
 
-  files.forEach((file) => {
+  for (const file of files) {
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const imageData = {
           id: Date.now() + Math.random(),
           name: file.name,
@@ -75,9 +83,9 @@ uiElements.imageInput.addEventListener("change", (event) => {
           dataUrl: e.target.result,
           fromMobile: false,
         };
-        addImage(imageData);
+        await addImage(imageData);
       };
       reader.readAsDataURL(file);
     }
-  });
+  }
 });

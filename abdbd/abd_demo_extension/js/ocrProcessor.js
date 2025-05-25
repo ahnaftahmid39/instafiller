@@ -58,17 +58,32 @@ export async function processImages() {
       );
       clearSelectedImages(); // Clear selected images after processing
       await updateOcrDataDisplay(getSessionId());
+      // After clearing images, there should be no images selected
       updateButtonStates(
-        false,
+        false, // No images after clearing
         getExtensionEnabled(),
         await hasOcrData(getSessionId())
       );
     } else {
       showMessage(`Error: ${response?.message || "Unknown error"}`, "#ef4444");
+      // Keep current images state on error
+      const hasImages = getSelectedImages().length > 0;
+      updateButtonStates(
+        hasImages,
+        getExtensionEnabled(),
+        await hasOcrData(getSessionId())
+      );
     }
   } catch (error) {
     console.error("Error processing images:", error);
     showMessage(`Error: ${error.message}`, "#ef4444");
+    // Keep current images state on error
+    const hasImages = getSelectedImages().length > 0;
+    updateButtonStates(
+      hasImages,
+      getExtensionEnabled(),
+      await hasOcrData(getSessionId())
+    );
   } finally {
     showProgress(false);
     uiElements.processImagesBtn.disabled = false;
@@ -98,10 +113,11 @@ export async function processNewMobilePhoto(imageData) {
     });
 
     if (response && response.status === "success") {
-      // No need to filter selectedImages here as it's handled by imageHandler.js
       await updateOcrDataDisplay(getSessionId());
+      // Check current images state after processing mobile photo
+      const hasImages = getSelectedImages().length > 0;
       updateButtonStates(
-        false,
+        hasImages,
         getExtensionEnabled(),
         await hasOcrData(getSessionId())
       );

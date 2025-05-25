@@ -116,7 +116,7 @@ function startMobilePolling() {
             fromMobile: true,
           };
 
-          addImage(imageData); // Add to selected images display
+          await addImage(imageData); // Add to selected images display
 
           const photoItem = document.createElement("div");
           photoItem.className = "mobile-photo-item";

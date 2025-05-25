@@ -47,8 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Event listener for clearing selected images (triggered by session.js)
-  document.addEventListener("clearSelectedImages", () => {
-    clearSelectedImages();
+  document.addEventListener("clearSelectedImages", async () => {
+    await clearSelectedImages();
   });
 
   // Upload option switching

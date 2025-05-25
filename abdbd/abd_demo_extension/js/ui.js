@@ -30,7 +30,6 @@ export const uiElements = {
   detectFieldsBtn: document.getElementById("detect-fields-btn"),
   formFieldsDisplay: document.getElementById("form-fields-display"),
   formFieldsCount: document.getElementById("form-fields-count"),
-  fillDetectedFieldsBtn: document.getElementById("fill-detected-fields-btn"),
 };
 
 // Add this function at the beginning of the file
@@ -66,7 +65,6 @@ export function initializeUIElements() {
     "detect-fields-btn",
     "form-fields-display",
     "form-fields-count",
-    "fill-detected-fields-btn",
   ];
 
   const missingElements = requiredElements.filter(
@@ -81,32 +79,75 @@ export function initializeUIElements() {
 }
 
 export function showProgress(show, text = "Processing...") {
+  const progressContainer =
+    uiElements.progressContainer ||
+    document.getElementById("progress-container");
+  const progressFill =
+    uiElements.progressFill || document.getElementById("progress-fill");
+  const progressText =
+    uiElements.progressText || document.getElementById("progress-text");
+
   if (show) {
-    uiElements.progressContainer.style.display = "block";
-    uiElements.progressFill.style.width = "0%";
-    uiElements.progressText.textContent = "0%";
+    // Show the global progress bar
+    document.body.classList.add("progress-active");
+    progressContainer.classList.add("show");
+    progressFill.style.width = "0%";
+    progressFill.className = "global-progress-fill processing";
+    progressText.textContent = text;
 
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += Math.random() * 15;
-      if (progress > 90) progress = 90;
-
-      uiElements.progressFill.style.width = progress + "%";
-      uiElements.progressText.textContent = Math.round(progress) + "%";
-    }, 200);
-
-    uiElements.progressContainer.dataset.interval = interval;
-  } else {
-    if (uiElements.progressContainer.dataset.interval) {
-      clearInterval(uiElements.progressContainer.dataset.interval);
+    // Clear any existing interval
+    if (progressContainer.dataset.interval) {
+      clearInterval(progressContainer.dataset.interval);
     }
 
-    uiElements.progressFill.style.width = "100%";
-    uiElements.progressText.textContent = "100%";
+    // Smooth progress animation
+    let progress = 0;
+    const interval = setInterval(() => {
+      // Slower, more realistic progress increments
+      const increment = Math.random() * 8 + 2; // 2-10% increments
+      progress += increment;
 
+      if (progress > 95) {
+        progress = 95; // Stop at 95% until completion
+      }
+
+      progressFill.style.width = progress + "%";
+
+      // Update text based on progress
+      if (progress < 30) {
+        progressText.textContent = `${text} ${Math.round(progress)}%`;
+      } else if (progress < 70) {
+        progressText.textContent = `Processing... ${Math.round(progress)}%`;
+      } else {
+        progressText.textContent = `Almost done... ${Math.round(progress)}%`;
+      }
+    }, 300); // Slower updates for smoother feel
+
+    progressContainer.dataset.interval = interval;
+  } else {
+    // Complete the progress
+    if (progressContainer.dataset.interval) {
+      clearInterval(progressContainer.dataset.interval);
+      delete progressContainer.dataset.interval;
+    }
+
+    // Smooth completion animation
+    progressFill.style.width = "100%";
+    progressFill.className = "global-progress-fill completing";
+    progressText.textContent = "Complete! ✨";
+
+    // Hide after completion animation
     setTimeout(() => {
-      uiElements.progressContainer.style.display = "none";
-    }, 500);
+      progressContainer.classList.remove("show");
+      document.body.classList.remove("progress-active");
+
+      // Reset for next use
+      setTimeout(() => {
+        progressFill.style.width = "0%";
+        progressFill.className = "global-progress-fill";
+        progressText.textContent = "Processing...";
+      }, 600);
+    }, 1200);
   }
 }
 
@@ -237,9 +278,6 @@ export function updateFormFieldsDisplay(fields) {
         <div class="empty-state-text">No form fields detected</div>
       </div>
     `;
-    if (uiElements.fillDetectedFieldsBtn) {
-      uiElements.fillDetectedFieldsBtn.disabled = true;
-    }
   } else {
     uiElements.formFieldsDisplay.innerHTML = "";
     fields.forEach((field, index) => {
@@ -285,10 +323,6 @@ export function updateFormFieldsDisplay(fields) {
       div.appendChild(details);
       uiElements.formFieldsDisplay.appendChild(div);
     });
-
-    if (uiElements.fillDetectedFieldsBtn) {
-      uiElements.fillDetectedFieldsBtn.disabled = false;
-    }
   }
 }
 
@@ -402,9 +436,20 @@ export function updateImageThumbnails(images = [], onRemove = null) {
 window.chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "updateProgress") {
     const { current, total, percentage } = request;
-    uiElements.progressFill.style.width = percentage + "%";
-    uiElements.progressText.textContent = `${Math.round(
-      percentage
-    )}% (${current}/${total})`;
+    const progressFill = document.getElementById("progress-fill");
+    const progressText = document.getElementById("progress-text");
+
+    if (progressFill && progressText) {
+      // Smooth transition to the new percentage
+      progressFill.style.width = percentage + "%";
+      progressText.textContent = `Processing image ${current}/${total} (${Math.round(
+        percentage
+      )}%)`;
+
+      // Add processing animation if not already present
+      if (!progressFill.classList.contains("processing")) {
+        progressFill.classList.add("processing");
+      }
+    }
   }
 });

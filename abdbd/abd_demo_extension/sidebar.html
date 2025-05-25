@@ -13,6 +13,15 @@
         <p>AI-powered OCR form filling</p>
       </div>
 
+      <!-- Global Progress Bar -->
+      <div id="progress-container" class="global-progress-container">
+        <div class="global-progress-bar">
+          <div id="progress-fill" class="global-progress-fill"></div>
+          <div class="global-progress-shimmer"></div>
+        </div>
+        <div id="progress-text" class="global-progress-text">Processing...</div>
+      </div>
+
       <!-- Extension Control Section -->
       <div class="section">
         <div class="section-header">
@@ -131,13 +140,6 @@
 
         <div id="image-thumbnails" class="image-thumbnails"></div>
 
-        <div id="progress-container" class="progress-container">
-          <div class="progress-bar">
-            <div id="progress-fill" class="progress-fill"></div>
-          </div>
-          <div id="progress-text" class="progress-text">0%</div>
-        </div>
-
         <button id="process-images-btn" class="btn btn-primary" disabled>
           <span class="btn-icon">🔍</span>
           Process Images (OCR)
@@ -172,15 +174,6 @@
         <button id="fill-form-btn" class="btn btn-primary" disabled>
           <span class="btn-icon">✨</span>
           Fill Form with OCR Data
-        </button>
-        <button
-          id="fill-detected-fields-btn"
-          class="btn btn-secondary"
-          disabled
-          style="margin-top: 8px"
-        >
-          <span class="btn-icon">🎯</span>
-          Fill Detected Fields
         </button>
       </div>
 

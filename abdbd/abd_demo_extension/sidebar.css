@@ -59,6 +59,7 @@ body::before {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   z-index: 1;
+  transition: margin-top 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .container::before {
@@ -550,64 +551,189 @@ input:checked + .slider:before {
   box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
 }
 
-/* Progress Bar */
-.progress-container {
-  margin: 22px 0;
-  display: none;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 10px;
-  background: rgba(27, 94, 32, 0.3);
-  border-radius: 5px;
-  overflow: hidden;
-  border: 1px solid rgba(76, 175, 80, 0.3);
-  backdrop-filter: blur(10px);
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4caf50 0%, #66bb6a 50%, #81c784 100%);
-  border-radius: 5px;
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 0%;
-  position: relative;
-  box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
-}
-
-.progress-fill::after {
-  content: "";
-  position: absolute;
+/* Global Progress Bar - SIDEBAR STICKY POSITIONING */
+.global-progress-container {
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 0;
+  width: 100%;
+  z-index: 9999;
+  background: rgba(13, 27, 15, 0.98);
+  backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(76, 175, 80, 0.4);
+  padding: 16px 20px;
+  margin: -28px -28px 20px -28px; /* Negative margins to extend to container edges */
+  transform: translateY(-100%);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4), 0 0 50px rgba(76, 175, 80, 0.1);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.global-progress-container.show {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.global-progress-bar {
+  position: relative;
+  width: 100%;
+  max-width: 440px; /* Slightly smaller to account for padding */
+  margin: 0 auto;
+  height: 8px;
+  background: rgba(27, 94, 32, 0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.global-progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #4caf50 0%,
+    #66bb6a 25%,
+    #81c784 50%,
+    #a5d6a7 75%,
+    #c8e6c9 100%
+  );
+  border-radius: 12px;
+  width: 0%;
+  position: relative;
+  transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.6), 0 0 40px rgba(76, 175, 80, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+.global-progress-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.4),
     transparent
   );
-  animation: shimmer-green 2s infinite;
+  animation: shimmer-sweep 2s ease-in-out infinite;
+  border-radius: 12px;
 }
 
-@keyframes shimmer-green {
+.global-progress-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e8f5e8;
+  margin-top: 12px;
+  text-align: center;
+  opacity: 0.9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s ease;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes pulse-glow {
   0% {
-    transform: translateX(-100%);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6), 0 0 40px rgba(76, 175, 80, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
   }
   100% {
-    transform: translateX(100%);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.8), 0 0 60px rgba(76, 175, 80, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
   }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+/* Progress Bar States */
+.global-progress-fill.processing {
+  animation: pulse-glow 1.5s ease-in-out infinite alternate,
+    progress-pulse 3s ease-in-out infinite;
+}
+
+.global-progress-fill.completing {
+  background: linear-gradient(
+    90deg,
+    #4caf50 0%,
+    #66bb6a 20%,
+    #81c784 40%,
+    #a5d6a7 60%,
+    #c8e6c9 80%,
+    #ffffff 100%
+  );
+  animation: completion-flash 0.8s ease-out;
+}
+
+@keyframes progress-pulse {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.1);
+  }
+}
+
+@keyframes completion-flash {
+  0% {
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6), 0 0 40px rgba(76, 175, 80, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.8),
+      0 0 80px rgba(76, 175, 80, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.8), 0 0 60px rgba(76, 175, 80, 0.5);
+  }
+}
+
+/* Remove old progress bar styles */
+.progress-container {
+  display: none !important;
+}
+
+.progress-bar {
+  display: none !important;
+}
+
+.progress-fill {
+  display: none !important;
 }
 
 .progress-text {
-  font-size: 12px;
-  font-weight: 600;
-  color: #c8e6c9;
-  margin-top: 10px;
-  text-align: center;
-  opacity: 0.9;
+  display: none !important;
+}
+
+/* Remove the body padding adjustment since we're using sticky positioning */
+body.progress-active .container {
+  margin-top: 0;
+}
+
+/* Ensure container has proper positioning context */
+.container {
+  position: relative;
+  overflow: visible;
 }
 
 /* QR Container */
@@ -967,5 +1093,10 @@ input:checked + .slider:before {
 
   .section {
     padding: 18px;
+  }
+
+  .global-progress-bar,
+  .global-progress-text {
+    max-width: calc(100% - 40px);
   }
 }

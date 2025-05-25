@@ -10,10 +10,10 @@ import {
 } from "./session.js";
 import { processImages } from "./ocrProcessor.js";
 import { fillForm } from "./formFiller.js";
-import { detectFormFields, fillDetectedFields } from "./formDetector.js";
+import { detectFormFields } from "./formDetector.js";
 import { uiElements, updateButtonStates } from "./ui.js";
 import { clearSelectedImages, getSelectedImages } from "./imageHandler.js";
-import { stopMobileSession, showMessage } from "./mobileCapture.js";
+import { stopMobileSession } from "./mobileCapture.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   // Initialize the application session
@@ -44,29 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Form detection event listeners
   uiElements.detectFieldsBtn?.addEventListener("click", detectFormFields);
-
-  uiElements.fillDetectedFieldsBtn?.addEventListener("click", async () => {
-    // Get OCR data from current session
-    const result = await window.chrome.storage.session.get(["ocrDataStore"]);
-    const ocrDataStore = result.ocrDataStore || {};
-    const sessionData = ocrDataStore[getSessionId()] || [];
-
-    if (sessionData.length === 0) {
-      showMessage(
-        "No OCR data available. Please process images first.",
-        "#d97706"
-      );
-      return;
-    }
-
-    // Combine all OCR data from the session
-    const combinedOcrData = {};
-    sessionData.forEach((item) => {
-      Object.assign(combinedOcrData, item.mappedData);
-    });
-
-    await fillDetectedFields(combinedOcrData);
-  });
 
   // Event listener for removing individual OCR data items (delegated from ui.js)
   document.addEventListener("removeOcrItem", (event) => {

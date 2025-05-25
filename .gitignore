@@ -1,3 +1,33 @@
-**/node_modules
-**/dist
-**/build
+# Node.js
+node_modules/
+.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm/
+.yarn/
+.pnpm/
+/dist/
+/build/
+
+# mkcert generated files
+# These are sensitive (private key) and machine-specific (local CA)
+localhost+1-key.pem
+localhost+1.pem
+
+# mkcert executable (if you downloaded it into the project)
+mkcert.exe
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Vercel related (if you're using it)
+.vercel/
+.next/
+
+# Other common build/temp files
+*.log
+*.tmp
+*.swp

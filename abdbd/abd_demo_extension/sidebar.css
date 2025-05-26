@@ -313,6 +313,17 @@ input:checked + .slider:before {
   border-color: hsl(var(--destructive) / 0.9);
 }
 
+/* Form Actions Grid */
+.form-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-actions-grid .btn {
+  margin: 0;
+}
+
 /* Data Source Tabs */
 .data-source-tabs {
   display: flex;
@@ -814,5 +825,10 @@ input:checked + .slider:before {
 
   .section {
     padding: 12px;
+  }
+
+  .form-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 }

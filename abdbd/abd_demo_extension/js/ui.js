@@ -4,6 +4,7 @@ export const uiElements = {
   imageThumbnails: document.getElementById("image-thumbnails"),
   processImagesBtn: document.getElementById("process-images-btn"),
   fillFormBtn: document.getElementById("fill-form-btn"),
+  clearFormBtn: document.getElementById("clear-form-btn"),
   newSessionBtn: document.getElementById("new-session-btn"),
   responseContainer: document.getElementById("response-container"),
   extensionToggle: document.getElementById("extension-toggle"),
@@ -40,6 +41,7 @@ export function initializeUIElements() {
     "image-thumbnails",
     "process-images-btn",
     "fill-form-btn",
+    "clear-form-btn",
     "new-session-btn",
     "response-container",
     "extension-toggle",
@@ -378,6 +380,9 @@ export function updateButtonStates(hasImages, extensionEnabled, hasOcrData) {
   uiElements.fillFormBtn.disabled = !hasOcrData || !extensionEnabled;
   if (uiElements.detectFieldsBtn) {
     uiElements.detectFieldsBtn.disabled = !extensionEnabled;
+  }
+  if (uiElements.clearFormBtn) {
+    uiElements.clearFormBtn.disabled = !extensionEnabled;
   }
 }
 

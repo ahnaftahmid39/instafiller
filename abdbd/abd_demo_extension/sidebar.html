@@ -163,18 +163,24 @@
         </div>
       </div>
 
-      <!-- Form Filling Section -->
+      <!-- Form Actions Section -->
       <div class="section">
         <div class="section-header">
           <div class="section-title-group">
             <span class="section-icon">📝</span>
-            <span class="section-title">Form Filling</span>
+            <span class="section-title">Form Actions</span>
           </div>
         </div>
-        <button id="fill-form-btn" class="btn btn-primary" disabled>
-          <span class="btn-icon">✨</span>
-          Fill Form with OCR Data
-        </button>
+        <div class="form-actions-grid">
+          <button id="fill-form-btn" class="btn btn-primary" disabled>
+            <span class="btn-icon">✨</span>
+            Fill Form with OCR Data
+          </button>
+          <button id="clear-form-btn" class="btn btn-secondary">
+            <span class="btn-icon">🧹</span>
+            Clear Form Fields
+          </button>
+        </div>
       </div>
 
       <div id="response-container" class="status" style="display: none"></div>

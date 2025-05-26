@@ -10,6 +10,7 @@ import {
 } from "./session.js";
 import { processImages } from "./ocrProcessor.js";
 import { fillForm } from "./formFiller.js";
+import { clearForm } from "./formCleaner.js";
 import { detectFormFields } from "./formDetector.js";
 import { uiElements, updateButtonStates } from "./ui.js";
 import { clearSelectedImages, getSelectedImages } from "./imageHandler.js";
@@ -39,6 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
   uiElements.processImagesBtn.addEventListener("click", processImages);
 
   uiElements.fillFormBtn.addEventListener("click", fillForm);
+
+  uiElements.clearFormBtn.addEventListener("click", clearForm);
 
   uiElements.newSessionBtn.addEventListener("click", newSession);
 

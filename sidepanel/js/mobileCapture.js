@@ -1,167 +1,215 @@
 // js/mobileCapture.js
 import { uiElements, updateMobileUI } from "./ui.js";
-import { SERVER_URL } from "./constants.js";
-import { addImage } from "./imageHandler.js";
-import { processNewMobilePhoto } from "./ocrProcessor.js";
-import { getExtensionEnabled } from "./session.js";
+import { addImage } from "./imageHandler.js"; // <-- CORRECTED: Import 'addImage' instead
+import { getSessionId } from "./session.js";
 
-let mobileSessionId = null;
-let mobilePollingInterval = null;
-// const QRCode = window.QRCode; // <--- REMOVE OR COMMENT OUT THIS LINE
+// Stores the currently used server URL, not a 'session' ID
+let currentServerUrl = "";
 
-export async function startMobileCaptureSession() {
-  if (!getExtensionEnabled()) {
-    showMessage("Extension is disabled", "#ef4444");
+// --- Utility Functions for Storage ---
+async function getStoredServerUrl() {
+  const result = await chrome.storage.local.get("savedServerIp");
+  return result.savedServerIp || "";
+}
+
+async function setStoredServerUrl(url) {
+  await chrome.storage.local.set({ savedServerIp: url });
+}
+
+async function getSavedServerIPs() {
+  const result = await chrome.storage.local.get("recentServerIps");
+  return result.recentServerIps || [];
+}
+
+async function addRecentServerIP(ip) {
+  let recentIps = await getSavedServerIPs();
+  recentIps = recentIps.filter((item) => item !== ip); // Remove if already exists
+  recentIps.unshift(ip); // Add to the beginning
+  recentIps = recentIps.slice(0, 5); // Keep only the latest 5
+  await chrome.storage.local.set({ recentServerIps: recentIps });
+  renderSavedServerIPs(); // Re-render the list
+}
+
+// --- UI Dialog Functions ---
+export async function showMobileIpDialog() {
+  uiElements.mobileIpDialog.style.display = "flex";
+  currentServerUrl = await getStoredServerUrl();
+  uiElements.serverIpInput.value = currentServerUrl;
+  renderSavedServerIPs();
+}
+
+export function hideMobileIpDialog() {
+  uiElements.mobileIpDialog.style.display = "none";
+}
+
+function renderSavedServerIPs() {
+  getSavedServerIPs().then((ips) => {
+    uiElements.savedServerIpsList.innerHTML = "";
+    if (ips.length === 0) {
+      const emptyItem = document.createElement("li");
+      emptyItem.classList.add("empty-list-item");
+      emptyItem.textContent = "No saved IPs.";
+      uiElements.savedServerIpsList.appendChild(emptyItem);
+    } else {
+      ips.forEach((ip) => {
+        const li = document.createElement("li");
+        li.textContent = ip;
+        li.classList.add("saved-ip-item");
+        li.addEventListener("click", () => {
+          uiElements.serverIpInput.value = ip;
+        });
+        uiElements.savedServerIpsList.appendChild(li);
+      });
+    }
+  });
+}
+
+// --- Core Photo Fetching Logic ---
+async function fetchPhotoFromMobile(serverIp) {
+  if (!serverIp) {
+    uiElements.mobileStatus.textContent = "Error: Server IP not set.";
+    uiElements.mobileStatus.style.color = "#dc3545";
     return;
   }
 
-  try {
-    uiElements.mobilePhotoBtn.disabled = true;
-    showMessage("Creating mobile session...", "#2563eb");
+  currentServerUrl = serverIp; // Set the URL for this fetch operation
+  await setStoredServerUrl(currentServerUrl); // Persist the chosen IP
+  await addRecentServerIP(currentServerUrl); // Add to recent IPs list
 
-    const response = await fetch(`${SERVER_URL}/api/create-session`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
+  const photoFetchUrl = `${currentServerUrl}/last_photo`;
+  uiElements.mobileStatus.textContent = "Fetching latest photo...";
+  uiElements.mobileStatus.style.color = "#007bff";
+  // Clear previous photo display while fetching
 
-    const data = await response.json();
-    mobileSessionId = data.sessionId;
-
-    // <--- START CHANGES HERE IN startMobileCaptureSession
-    if (data.qrCodeData) {
-      // Create an <img> element if it doesn't exist, or clear the div
-      let qrImgElement = uiElements.qrCode.querySelector("img");
-      if (!qrImgElement) {
-        qrImgElement = document.createElement("img");
-        qrImgElement.alt = "QR Code";
-        // You can adjust dimensions as needed, or let CSS handle it
-        qrImgElement.style.width = "200px";
-        qrImgElement.style.height = "200px";
-        uiElements.qrCode.appendChild(qrImgElement);
+  chrome.runtime.sendMessage(
+    { action: "fetchPhoto", serverUrl: photoFetchUrl },
+    (response) => {
+      if (chrome.runtime.lastError) {
+        console.error("Runtime error:", chrome.runtime.lastError.message);
+        uiElements.mobileStatus.textContent = `Error: ${chrome.runtime.lastError.message}`;
+        uiElements.mobileStatus.style.color = "#dc3545";
+        return;
       }
-      // Set the received Base64 image data as the src
-      qrImgElement.src = data.qrCodeData;
 
-      uiElements.qrContainer.style.display = "block";
-      uiElements.mobileStatus.textContent =
-        "Scan QR code with your phone to start capturing";
-      uiElements.mobileSessionInfo.textContent = `Session: ${mobileSessionId.substring(
-        0,
-        8
-      )}...`;
+      if (response && response.success) {
+        uiElements.mobileStatus.textContent = "Photo received!";
+        uiElements.mobileStatus.style.color = "#28a745";
 
-      startMobilePolling();
-      updateMobileUI(true); // Indicate active session
-      showMessage(
-        "Mobile session created! Scan QR code with your phone",
-        "#059669"
-      );
-    } else {
-      // Handle case where server didn't return qrCodeData for some reason
-      console.error("Server did not return QR code data.");
-      showMessage(
-        "Failed to create mobile session: No QR data from server.",
-        "#ef4444"
-      );
-      uiElements.mobilePhotoBtn.disabled = false;
+        // Create an image data object compatible with your addImage function
+        const imageData = {
+          id: Date.now() + Math.random(), // Unique ID for the image
+          name: `mobile_photo_${Date.now()}.png`, // A generic name
+          base64: response.dataUrl.split(",")[1], // Extract base64 part
+          mimeType: response.dataUrl.split(",")[0].split(":")[1].split(";")[0], // Extract mime type
+          dataUrl: response.dataUrl,
+          fromMobile: true, // Indicate it's from mobile
+        };
+
+        // Add the image using your existing addImage function
+        addImage(imageData);
+        console.log("Mobile photo added to image handler.");
+
+        // Also display the received photo in the mobile section
+      } else {
+        uiElements.mobileStatus.textContent = `Error: ${
+          response.error || "Failed to fetch photo."
+        }`;
+        uiElements.mobileStatus.style.color = "#dc3545";
+        console.error(
+          "Error fetching photo from background script:",
+          response.error
+        );
+      }
     }
-    // <--- END CHANGES HERE IN startMobileCaptureSession
-  } catch (error) {
-    console.error("Error creating mobile session:", error);
-    showMessage(
-      "Failed to create mobile session. Is the server running and accessible?",
-      "#ef4444"
-    );
-    uiElements.mobilePhotoBtn.disabled = false;
+  );
+}
+
+// --- Event Handler for Dialog Connect Button ---
+async function handleConnectAndFetch() {
+  let ipAddress = uiElements.serverIpInput.value.trim();
+
+  if (ipAddress) {
+    // 1. Ensure http:// protocol
+    if (!ipAddress.startsWith("http://") && !ipAddress.startsWith("https://")) {
+      ipAddress = `http://${ipAddress}`;
+    }
+
+    // 2. Check if a port is already present.
+    // We'll use URL object for robust parsing.
+    let urlObj;
+    try {
+      urlObj = new URL(ipAddress);
+    } catch (e) {
+      // If ipAddress isn't a valid URL format initially,
+      // e.g., just "192.168.0.145", the URL constructor might throw.
+      // In this case, we'll construct it manually.
+      console.warn(
+        "Invalid URL format, trying to parse manually:",
+        ipAddress,
+        e
+      );
+      // Re-add http:// just in case for consistent base
+      if (
+        !ipAddress.startsWith("http://") &&
+        !ipAddress.startsWith("https://")
+      ) {
+        ipAddress = `http://${ipAddress}`;
+      }
+      urlObj = new URL(ipAddress); // This should now work, or throw a more specific error if it's truly malformed
+    }
+
+    // 3. If no port is explicitly provided by the user, add the fixed port 8080.
+    // The `port` property of URL object will be an empty string if no port is specified.
+    if (!urlObj.port) {
+      // Append the fixed port 8080
+      // We reconstruct the URL to properly include the port
+      ipAddress = `${urlObj.protocol}//${urlObj.hostname}:8080${urlObj.pathname}${urlObj.search}${urlObj.hash}`;
+    }
+
+    // 4. Remove trailing slash for consistency if any
+    if (ipAddress.endsWith("/")) {
+      ipAddress = ipAddress.slice(0, -1);
+    }
+
+    console.log("Formatted server URL for fetch:", ipAddress); // Log for debugging
+
+    await fetchPhotoFromMobile(ipAddress); // Use the now correctly formatted IP with port
+    hideMobileIpDialog();
+  } else {
+    uiElements.mobileStatus.textContent = "Please enter a server IP address.";
+    uiElements.mobileStatus.style.color = "#dc3545";
   }
+}
+
+// --- Initialization ---
+export function initMobileCapture() {
+  // The "Get Photos from Mobile" button now directly opens the IP dialog
+  uiElements.mobilePhotoBtn.addEventListener("click", showMobileIpDialog);
+
+  // Dialog buttons
+  uiElements.closeServerIpDialogBtn.addEventListener(
+    "click",
+    hideMobileIpDialog
+  );
+  uiElements.connectServerIpBtn.addEventListener(
+    "click",
+    handleConnectAndFetch
+  ); // Connect triggers fetch
+
+  // Close dialog when clicking outside
+  uiElements.mobileIpDialog.addEventListener("click", (event) => {
+    if (event.target === uiElements.mobileIpDialog) {
+      hideMobileIpDialog();
+    }
+  });
+
+  // Initial load of recent IPs when module initializes
+  renderSavedServerIPs();
 }
 
 export function stopMobileSession() {
-  if (mobilePollingInterval) {
-    clearInterval(mobilePollingInterval);
-    mobilePollingInterval = null;
-  }
-
-  mobileSessionId = null;
-  updateMobileUI(false); // Indicate inactive session
-  showMessage("Mobile session stopped", "#d97706");
-  // Clear the QR code image when stopping the session
-  if (uiElements.qrCode) {
-    uiElements.qrCode.innerHTML = ""; // Clears the injected <img> tag
-  }
+  console.log("stopMobileSession called (no active session concept).");
+  uiElements.mobileStatus.textContent = "Ready to fetch photos.";
+  uiElements.mobileStatus.style.color = "#6c757d";
+  updateMobileUI(false);
 }
-
-function startMobilePolling() {
-  if (mobilePollingInterval) {
-    clearInterval(mobilePollingInterval);
-  }
-
-  mobilePollingInterval = setInterval(async () => {
-    if (!mobileSessionId) return;
-
-    try {
-      const response = await fetch(
-        `${SERVER_URL}/api/poll-photos/${mobileSessionId}`
-      );
-      const data = await response.json();
-
-      if (data.success && data.photos.length > 0) {
-        for (const photo of data.photos) {
-          const imageData = {
-            id: photo.id,
-            name: `mobile_${new Date(photo.timestamp).toISOString()}.jpg`,
-            base64: photo.data,
-            mimeType: photo.mimeType,
-            dataUrl: `data:${photo.mimeType};base64,${photo.data}`,
-            fromMobile: true,
-          };
-
-          await addImage(imageData); // Add to selected images display
-
-          const photoItem = document.createElement("div");
-          photoItem.className = "mobile-photo-item";
-          photoItem.innerHTML = `
-                        <span>📷 ${imageData.name}</span>
-                        <span>${new Date(
-                          photo.timestamp
-                        ).toLocaleTimeString()}</span>
-                    `;
-          uiElements.mobilePhotos.appendChild(photoItem);
-
-          if (data.photos.length === 1) {
-            // Auto-process if a single photo is received
-            await processNewMobilePhoto(imageData);
-          }
-        }
-
-        uiElements.mobileStatus.textContent = `Received ${data.photos.length} new photo(s)`;
-        showMessage(
-          `Received ${data.photos.length} photo(s) from mobile`,
-          "#059669"
-        );
-      }
-
-      if (data.sessionStatus === "completed") {
-        uiElements.mobileStatus.textContent = "Mobile session completed";
-        stopMobileSession();
-      }
-    } catch (error) {
-      console.error("Error polling mobile photos:", error);
-      // Optionally, show a message if polling consistently fails
-    }
-  }, 2000); // Poll every 2 seconds
-}
-
-// Event listeners for mobile capture UI
-uiElements.mobilePhotoBtn.addEventListener("click", startMobileCaptureSession);
-uiElements.stopMobileBtn.addEventListener("click", stopMobileSession);
-
-// Listen for a custom event to stop mobile session, triggered by new session
-document.addEventListener("stopMobileSession", stopMobileSession);
-
-function showMessage(message, color) {
-  // Implement showMessage function here
-  // This is a placeholder to satisfy the dependency
-  console.log(`showMessage: ${message}, color: ${color}`);
-}
-export { showMessage };

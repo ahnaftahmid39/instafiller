@@ -63,6 +63,179 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Dialog Overlay */
+/* Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+/* No other CSS changes needed for this request */
+
+/* Dialog Content */
+.dialog-content {
+  background-color: #25242e; /* A solid, distinct background for the content box */
+  /* Assuming you have light background variable */
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  position: relative; /* For the close button positioning */
+}
+
+.dialog-content h2 {
+  margin-top: 0;
+  color: var(--text-color-primary);
+  font-size: 1.4em;
+  margin-bottom: 20px;
+}
+
+.dialog-content p {
+  color: var(--text-color-secondary);
+  margin-bottom: 20px;
+}
+
+.dialog-content .input-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.dialog-content label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: var(--text-color-primary);
+}
+
+.dialog-content input[type="text"] {
+  width: calc(100% - 20px); /* Adjust for padding */
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 1em;
+  background-color: var(--input-bg-color);
+  color: var(--text-color-primary);
+}
+
+.dialog-content .dialog-btn {
+  margin-top: 15px;
+  width: calc(100% - 20px);
+}
+
+.saved-ips-section {
+  margin-top: 25px;
+  text-align: left;
+  max-height: 150px; /* Limit height for scrollability */
+  overflow-y: auto; /* Enable scrolling if too many IPs */
+  padding-right: 5px; /* Prevent scrollbar from obscuring text */
+}
+
+.saved-ips-section h3 {
+  font-size: 1.1em;
+  color: var(--text-color-primary);
+  margin-bottom: 10px;
+}
+
+.saved-ips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.saved-ips-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color-secondary);
+}
+
+.saved-ips-list li:last-child {
+  border-bottom: none;
+}
+
+.saved-ips-list .ip-address {
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  flex-grow: 1; /* Allow IP to take up available space */
+}
+
+.saved-ips-list .ip-address:hover {
+  background-color: var(--hover-color); /* Assuming a hover color variable */
+}
+
+.saved-ips-list .delete-ip-btn {
+  background: none;
+  border: none;
+  color: var(--danger-color); /* Assuming a danger color variable */
+  cursor: pointer;
+  font-size: 1.2em;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  margin-left: 10px; /* Space between IP and delete button */
+}
+
+.saved-ips-list .delete-ip-btn:hover {
+  background-color: rgba(
+    var(--danger-color-rgb),
+    0.1
+  ); /* Assuming RGB for danger color */
+}
+
+/* Style for the new mobile session status display */
+.mobile-session-status-display {
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--card-bg); /* Use a suitable background variable */
+  text-align: center;
+}
+
+.mobile-session-status-display .mobile-status,
+.mobile-session-status-display .mobile-session-info {
+  font-size: 1.1em;
+  margin-bottom: 8px;
+  color: var(--text-color-primary);
+}
+
+.mobile-session-status-display .mobile-photos {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: var(--input-bg-color); /* Lighter background for photos */
+  border-radius: 5px;
+  max-height: 120px;
+  overflow-y: auto;
+  border: 1px dashed var(--border-color);
+}
+
+.mobile-session-status-display .mobile-photo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dotted var(--border-color-secondary);
+  font-size: 0.9em;
+  color: var(--text-color-secondary);
+}
+
+.mobile-session-status-display .mobile-photo-item:last-child {
+  border-bottom: none;
+}
+
 .container {
   background-color: hsl(var(--card));
   border: 1px solid hsl(var(--border));

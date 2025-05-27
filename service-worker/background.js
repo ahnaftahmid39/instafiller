@@ -187,6 +187,33 @@ async function handleMultipleImageProcessing(request, sendResponse) {
   }
 }
 
+// const cleanedResponse = response
+//               .replace(/^```json\n/, "") // Remove the opening ```json
+//               .replace(/\n```$/, "") // Remove the closing ```
+//               .replace(/```$/, "") // Remove any trailing backticks
+//               .replaceAll("`", ""); // Remove any remaining backticks
+//             console.log("Cleaned Response:", cleanedResponse);
+
+//             try {
+//               const parsedResponse = JSON.parse(cleanedResponse);
+
+//               const filteredData = inputList
+//                 .map((item) => {
+//                   const key = item.id;
+//                   const value = parsedResponse[key.replaceAll(" ", "")] || null;
+//                   return { ...item, value: value };
+//                 })
+//                 .filter((item) => item.value !== null);
+
+//               addedValueToElements(filteredData);
+//               console.log(
+//                 "Response from Gemini (parsed object):",
+//                 filteredData
+//               );
+//             } catch (parseError) {
+//               console.error("Error parsing JSON:", parseError);
+//             }
+
 async function handleFormFillingWithStoredData(request, sendResponse) {
   const { sessionId, tabId } = request;
 
@@ -212,7 +239,11 @@ async function handleFormFillingWithStoredData(request, sendResponse) {
     }
 
     // Get form fields from the current page
-    const [{ result: filteredForm }] = await chrome.scripting.executeScript({
+    const [
+      {
+        result: { html, inputList },
+      },
+    ] = await chrome.scripting.executeScript({
       target: { tabId: tabId },
       function: filterFieldsInForm,
     });
@@ -220,7 +251,8 @@ async function handleFormFillingWithStoredData(request, sendResponse) {
     // Combine all OCR data and create a comprehensive mapping
     const combinedMappedData = await createCombinedMapping(
       sessionData,
-      filteredForm
+      html,
+      inputList
     );
 
     console.log(
@@ -314,12 +346,12 @@ async function storeOcrData(sessionId, newData) {
   }
 }
 
-async function createCombinedMapping(sessionData, filteredForm) {
+async function createCombinedMapping(sessionData, html, inputList) {
   // Combine all OCR text from the session
   const allOcrText = sessionData
     .map((item) => `From ${item.filename}:\n${item.ocrText}`)
     .join("\n\n---\n\n");
 
   // Create a comprehensive mapping using all available data
-  return await mapOcrToFormFieldsWithGemini(allOcrText, filteredForm);
+  return await mapOcrToFormFieldsWithGemini(allOcrText, html, inputList);
 }

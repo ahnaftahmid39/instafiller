@@ -195,47 +195,6 @@ body {
   ); /* Assuming RGB for danger color */
 }
 
-/* Style for the new mobile session status display */
-.mobile-session-status-display {
-  margin-top: 15px;
-  padding: 15px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background-color: var(--card-bg); /* Use a suitable background variable */
-  text-align: center;
-}
-
-.mobile-session-status-display .mobile-status,
-.mobile-session-status-display .mobile-session-info {
-  font-size: 1.1em;
-  margin-bottom: 8px;
-  color: var(--text-color-primary);
-}
-
-.mobile-session-status-display .mobile-photos {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: var(--input-bg-color); /* Lighter background for photos */
-  border-radius: 5px;
-  max-height: 120px;
-  overflow-y: auto;
-  border: 1px dashed var(--border-color);
-}
-
-.mobile-session-status-display .mobile-photo-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  border-bottom: 1px dotted var(--border-color-secondary);
-  font-size: 0.9em;
-  color: var(--text-color-secondary);
-}
-
-.mobile-session-status-display .mobile-photo-item:last-child {
-  border-bottom: none;
-}
-
 .container {
   background-color: hsl(var(--card));
   border: 1px solid hsl(var(--border));

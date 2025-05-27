@@ -1,3 +1,5 @@
+import { fillFormValues } from "../content-functions/content_functions.js";
+
 // This function fills the form fields with the OCR data, but skips already filled fields.
 function fillFormFieldsWithOcrData(mappedData) {
   const forms = document.querySelectorAll("form");
@@ -167,11 +169,11 @@ function fillFormFieldsWithOcrData(mappedData) {
   }
 }
 
-// Add a message listener to content.js to receive data from background.js
+// Add a message listener to content-scripts/content.js to receive data from background.js
 window.chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "autofillForm" && request.mappedData) {
     try {
-      fillFormFieldsWithOcrData(request.mappedData);
+      fillFormValues(request.mappedData);
       sendResponse({ status: "success" }); // Acknowledge successful processing
     } catch (e) {
       console.error("Error filling form in content script:", e);

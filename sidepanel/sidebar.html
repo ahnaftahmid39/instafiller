@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Form Filler</title>
+    <link rel="stylesheet" href="sidebar.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🤖 Smart Form Filler</h1>
+        <p>AI-powered OCR form filling</p>
+      </div>
+
+      <!-- Global Progress Bar -->
+      <div id="progress-container" class="global-progress-container">
+        <div class="global-progress-bar">
+          <div id="progress-fill" class="global-progress-fill"></div>
+          <div class="global-progress-shimmer"></div>
+        </div>
+        <div id="progress-text" class="global-progress-text">Processing...</div>
+      </div>
+
+      <!-- Extension Control Section -->
+      <div class="section">getFormField
+            <div id="status-dot" class="status-dot"></div>
+            <span id="extension-status" class="status-text">Enabled</span>
+          </div>
+        </div>
+        <div class="toggle-control">
+          <span>Enable Extension</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="extension-toggle" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Session Management Section -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">📊</span>
+            <span class="section-title">Session Management</span>
+          </div>
+        </div>
+        <button id="new-session-btn" class="btn btn-secondary">
+          <span class="btn-icon">🔄</span>
+          New Session
+        </button>
+        <div id="total-sessions-info" class="total-sessions-info"></div>
+      </div>
+
+      <!-- Form Field Detection Section -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">🔍</span>
+            <span class="section-title">Form Field Detection</span>
+          </div>
+          <span id="form-fields-count" class="count-badge">0 fields</span>
+        </div>
+        <button id="detect-fields-btn" class="btn btn-primary">
+          <span class="btn-icon">🔍</span>
+          Detect Form Fields
+        </button>
+        <div id="form-fields-display" class="form-fields-display">
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <div class="empty-state-text">No form fields detected</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Upload Section -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">📷</span>
+            <span class="section-title">Image Upload</span>
+          </div>
+        </div>
+
+        <div class="data-source-tabs">
+          <button class="tab-button active" id="computer-option">
+            💻 Computer
+          </button>
+          <button class="tab-button" id="mobile-option">📱 Mobile</button>
+        </div>
+
+        <div id="computer-upload" class="tab-content active">
+          <div class="file-upload-section" id="file-upload-area">
+            <div class="file-upload-area">
+              <div class="file-upload-icon">📄</div>
+              <div class="file-upload-text">
+                Click to select or drag & drop images
+              </div>
+              <div class="file-upload-subtext">Supports: PNG, JPG, JPEG</div>
+            </div>
+            <input
+              type="file"
+              id="image-input"
+              class="file-input"
+              accept="image/*"
+              multiple
+            />
+          </div>
+        </div>
+
+        <div id="mobile-upload" class="tab-content" style="display: none">
+          <button id="mobile-photo-btn" class="btn btn-primary">
+            <span class="btn-icon">📱</span>
+            Get Photos from Mobile
+          </button>
+
+          <div id="qr-container" class="qr-container">
+            <h3>📱 Scan QR Code with Your Phone</h3>
+            <div id="qr-code" class="qr-code"></div>
+            <div class="mobile-status">
+              <div id="mobile-status">Waiting for mobile connection...</div>
+              <div id="mobile-session-info"></div>
+            </div>
+            <div id="mobile-photos" class="mobile-photos"></div>
+            <button
+              id="stop-mobile-btn"
+              class="btn btn-danger"
+              style="margin-top: 12px"
+            >
+              Stop Mobile Session
+            </button>
+          </div>
+        </div>
+
+        <div id="image-thumbnails" class="image-thumbnails"></div>
+
+        <button id="process-images-btn" class="btn btn-primary" disabled>
+          <span class="btn-icon">🔍</span>
+          Process Images (OCR)
+        </button>
+      </div>
+
+      <!-- Stored OCR Data Section -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">💾</span>
+            <span class="section-title">Stored OCR Data</span>
+          </div>
+          <span id="ocr-count" class="count-badge">0 items</span>
+        </div>
+        <div id="ocr-data-display" class="ocr-data-display">
+          <div class="empty-state">
+            <div class="empty-state-icon">📄</div>
+            <div class="empty-state-text">No OCR data stored</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions Section -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">📝</span>
+            <span class="section-title">Form Actions</span>
+          </div>
+        </div>
+        <div class="form-actions-grid">
+          <button id="fill-form-btn" class="btn btn-primary" disabled>
+            <span class="btn-icon">✨</span>
+            Fill Form with OCR Data
+          </button>
+          <button id="clear-form-btn" class="btn btn-secondary">
+            <span class="btn-icon">🧹</span>
+            Clear Form Fields
+          </button>
+        </div>
+      </div>
+
+      <div id="response-container" class="status" style="display: none"></div>
+    </div>
+
+    <script type="module" src="js/constants.js"></script>
+    <script type="module" src="js/ui.js"></script>
+    <script type="module" src="js/session.js"></script>
+    <script type="module" src="js/imageHandler.js"></script>
+    <script type="module" src="js/ocrProcessor.js"></script>
+    <script type="module" src="js/formFiller.js"></script>
+    <script type="module" src="js/mobileCapture.js"></script>
+    <script type="module" src="js/formDetector.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
+  </body>
+</html>

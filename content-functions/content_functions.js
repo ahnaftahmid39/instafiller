@@ -33,6 +33,162 @@ export function filterFieldsInForm() {
 
   let generatedNameCounter = 1;
 
+  function handleCheckboxRadioNaming(
+    originalElement,
+    clonedElement,
+    parentClone
+  ) {
+    const inputType =
+      originalElement.type || originalElement.getAttribute("type") || "";
+
+    if (inputType === "radio") {
+      // Check if this is a hidden input that's part of a custom radio group
+      const isHiddenCustomInput = isHiddenCustomFormControl(originalElement);
+
+      if (isHiddenCustomInput) {
+        // Find the associated visible control (button/div with role="radio")
+        const associatedControl = findAssociatedCustomControl(
+          originalElement,
+          "radio"
+        );
+        const groupName = getCustomRadioGroupName(
+          originalElement,
+          associatedControl,
+          parentClone
+        );
+
+        clonedElement.setAttribute("name", groupName);
+        originalElement.setAttribute("name", groupName);
+      } else {
+        // Handle regular radio inputs
+        const groupKey = findRadioGroupKey(originalElement, parentClone);
+        const groupName = `radio-group-${getOrCreateGroupId(
+          radioGroups,
+          groupKey
+        )}`;
+
+        clonedElement.setAttribute("name", groupName);
+        originalElement.setAttribute("name", groupName);
+      }
+    } else if (inputType === "checkbox") {
+      const isHiddenCustomInput = isHiddenCustomFormControl(originalElement);
+
+      if (isHiddenCustomInput) {
+        const associatedControl = findAssociatedCustomControl(
+          originalElement,
+          "checkbox"
+        );
+        const groupName = getCustomCheckboxGroupName(
+          originalElement,
+          associatedControl,
+          parentClone
+        );
+
+        clonedElement.setAttribute("name", groupName);
+        originalElement.setAttribute("name", groupName);
+      } else {
+        // Handle regular checkboxes
+        const name = `checkbox-${generatedNameCounter}`;
+        clonedElement.setAttribute("name", name);
+        originalElement.setAttribute("name", name);
+        generatedNameCounter++;
+      }
+    }
+  }
+
+  function isHiddenCustomFormControl(inputElement) {
+    const style = inputElement.style;
+    const computedStyle = window.getComputedStyle(inputElement);
+
+    // Check for common hiding patterns used by UI libraries
+    return (
+      inputElement.hasAttribute("aria-hidden") ||
+      style.opacity === "0" ||
+      style.position === "absolute" ||
+      style.transform?.includes("translateX(-100%)") ||
+      computedStyle.opacity === "0" ||
+      computedStyle.position === "absolute" ||
+      inputElement.getAttribute("tabindex") === "-1"
+    );
+  }
+
+  function findAssociatedCustomControl(hiddenInput, controlType) {
+    const parent = hiddenInput.parentElement;
+    if (!parent) return null;
+
+    // Look for button or div with appropriate role
+    const roleSelector = `[role="${controlType}"], button[data-state], div[data-state]`;
+
+    // First check siblings
+    const sibling = parent.querySelector(roleSelector);
+    if (sibling && sibling !== hiddenInput) {
+      return sibling;
+    }
+
+    // Check parent's siblings or nearby elements
+    const parentSibling = parent.parentElement?.querySelector(roleSelector);
+    return parentSibling;
+  }
+
+  function getCustomRadioGroupName(hiddenInput, visibleControl, parentClone) {
+    // Try to determine group name from various sources
+    let groupIdentifier = null;
+
+    // Check for data attributes that might indicate grouping
+    if (visibleControl) {
+      groupIdentifier =
+        visibleControl.getAttribute("data-slot") ||
+        visibleControl.getAttribute("data-group") ||
+        visibleControl.getAttribute("name") ||
+        visibleControl.getAttribute("data-radix-collection-item");
+    }
+
+    // Check the hidden input itself
+    if (!groupIdentifier) {
+      groupIdentifier = hiddenInput.getAttribute("name");
+    }
+
+    // Fallback to parent-based grouping
+    if (!groupIdentifier) {
+      const parentId = parentClone?.id || parentClone?.className || "default";
+      groupIdentifier = `custom-radio-${parentId}`;
+    }
+
+    // Extract base name from data-slot or similar
+    if (groupIdentifier && groupIdentifier.includes("radio-group")) {
+      return groupIdentifier.replace("-item", "");
+    }
+
+    return `custom-radio-group-${groupIdentifier}`;
+  }
+
+  function getCustomCheckboxGroupName(
+    hiddenInput,
+    visibleControl,
+    parentClone
+  ) {
+    // Similar logic for checkboxes
+    let identifier =
+      visibleControl?.getAttribute("data-slot") ||
+      visibleControl?.getAttribute("name") ||
+      hiddenInput.getAttribute("name") ||
+      `custom-checkbox-${generatedNameCounter}`;
+
+    generatedNameCounter++;
+    return identifier;
+  }
+
+  // Helper function for group ID management
+  const radioGroups = new Map();
+  const checkboxGroups = new Map();
+
+  function getOrCreateGroupId(groupMap, key) {
+    if (!groupMap.has(key)) {
+      groupMap.set(key, groupMap.size + 1);
+    }
+    return groupMap.get(key);
+  }
+
   /**
    * Recursively traverses the form and filters elements/attributes
    * @param {Element} currentElement - Current element being processed
@@ -65,15 +221,27 @@ export function filterFieldsInForm() {
         ["input", "textarea", "select"].includes(tagName) &&
         !clonedElement.hasAttribute("name")
       ) {
-        clonedElement.setAttribute(
-          "name",
-          `generated-name-${generatedNameCounter}`
-        );
-        currentElement.setAttribute(
-          "name",
-          `generated-name-${generatedNameCounter}`
-        );
-        generatedNameCounter++;
+        const inputType =
+          currentElement.type || currentElement.getAttribute("type") || "";
+
+        if (
+          tagName === "input" &&
+          (inputType === "checkbox" || inputType === "radio")
+        ) {
+          // Handle checkbox and radio inputs (including custom UI library ones)
+          handleCheckboxRadioNaming(currentElement, clonedElement, parentClone);
+        } else {
+          // Handle other input types
+          clonedElement.setAttribute(
+            "name",
+            `generated-name-${generatedNameCounter}`
+          );
+          currentElement.setAttribute(
+            "name",
+            `generated-name-${generatedNameCounter}`
+          );
+          generatedNameCounter++;
+        }
       }
 
       // Copy text content for elements that typically contain text
@@ -101,22 +269,27 @@ export function filterFieldsInForm() {
     }
   }
 
-  const form = document.querySelector("form");
-  if (!form) return;
-  const clonedForm = document.createElement("form");
+  const forms = document.querySelectorAll("form");
+  let formsHtml = "";
+  forms.forEach((form) => {
+    if (!form) return;
+    const clonedForm = document.createElement("form");
 
-  // Copy allowed attributes from the original form
-  for (const attr of form.attributes) {
-    if (allowedAttributes.includes(attr.name)) {
-      clonedForm.setAttribute(attr.name, attr.value);
+    // Copy allowed attributes from the original form
+    for (const attr of form.attributes) {
+      if (allowedAttributes.includes(attr.name)) {
+        clonedForm.setAttribute(attr.name, attr.value);
+      }
     }
-  }
 
-  // Start DFS traversal
-  for (const child of form.children) {
-    dfs(child, null, clonedForm, allowedElements, allowedAttributes);
-  }
-  return clonedForm.outerHTML;
+    // Start DFS traversal
+    for (const child of form.children) {
+      dfs(child, null, clonedForm, allowedElements, allowedAttributes);
+    }
+
+    formsHtml += clonedForm.outerHTML;
+  });
+  return formsHtml;
 }
 
 // // Example usage:
@@ -129,10 +302,6 @@ export function filterFieldsInForm() {
 //   phone: "01771021129"
 // };
 
-/**
- * Fills form fields with mapped data from OCR results
- * @param {{ [key: string]: string }} mappedData - The data to fill in the form fields
- */
 export function fillFormValues(mappedData) {
   console.log("Filling form values with mapped data:", mappedData);
   Object.entries(mappedData).forEach((data) => {
@@ -141,34 +310,91 @@ export function fillFormValues(mappedData) {
       console.warn("Skipping invalid mapped data:", data);
       return;
     }
-    const [element] = document.getElementsByName(name);
+    const elements = document.getElementsByName(name);
+    const [element] = elements;
 
     if (element) {
       switch (element.tagName.toLowerCase()) {
         case "input":
-          if (element.type === "checkbox" || element.type === "radio") {
-            element.checked = value === "true";
+          const inputType = element.type.toLowerCase();
+
+          if (inputType === "checkbox") {
+            // Handle checkbox - value should be an array of strings
+            if (Array.isArray(value)) {
+              // Check if any checkbox with this name is already checked
+              const checkboxes = Array.from(elements);
+              const hasCheckedCheckbox = checkboxes.some((cb) => cb.checked);
+              console.log({ checkboxes, hasCheckedCheckbox, value });
+              if (!hasCheckedCheckbox) {
+                // No checkbox is checked, so update all matching values
+                checkboxes.forEach((checkbox) => {
+                  checkbox.checked = value.includes(checkbox.value);
+                  // Trigger events for each updated checkbox
+                  checkbox.dispatchEvent(new Event("input", { bubbles: true }));
+                  checkbox.dispatchEvent(
+                    new Event("change", { bubbles: true })
+                  );
+                });
+              }
+              // If any checkbox is already checked, ignore the update
+            }
+          } else if (inputType === "radio") {
+            // Handle radio - value should be a string
+            if (typeof value === "string") {
+              // Check if any radio button with this name is already selected
+              const radios = Array.from(elements);
+              const hasSelectedRadio = radios.some((radio) => radio.checked);
+
+              if (!hasSelectedRadio) {
+                // No radio is selected, so select the matching value
+                const targetRadio = radios.find(
+                  (radio) => radio.value === value
+                );
+                if (targetRadio) {
+                  targetRadio.checked = true;
+                  targetRadio.dispatchEvent(
+                    new Event("input", { bubbles: true })
+                  );
+                  targetRadio.dispatchEvent(
+                    new Event("change", { bubbles: true })
+                  );
+                }
+              }
+              // If any radio is already selected, ignore the update
+            }
           } else {
-            element.value = value;
+            // Handle other input types (text, email, etc.)
+            if (!element.value) {
+              element.value = value;
+              element.dispatchEvent(new Event("input", { bubbles: true }));
+              element.dispatchEvent(new Event("change", { bubbles: true }));
+            }
           }
           break;
+
         case "textarea":
-          element.value = value;
+          // don't override
+          if (!element.value) {
+            element.value = value;
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+            element.dispatchEvent(new Event("change", { bubbles: true }));
+          }
           break;
+
         case "select":
           const option = Array.from(element.options).find(
             (opt) => opt.value === value
           );
           if (option) {
             option.selected = true;
+            element.dispatchEvent(new Event("input", { bubbles: true }));
+            element.dispatchEvent(new Event("change", { bubbles: true }));
           }
           break;
+
         default:
           break;
       }
-      // Trigger events to notify the page of changes
-      element.dispatchEvent(new Event("input", { bubbles: true }));
-      element.dispatchEvent(new Event("change", { bubbles: true }));
     }
   });
 }

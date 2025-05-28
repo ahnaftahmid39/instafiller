@@ -8,108 +8,72 @@
   </head>
   <body>
     <div class="container">
+      <!-- Header -->
       <div class="header">
         <h1>🤖 Smart Form Filler</h1>
         <p>AI-powered OCR form filling</p>
       </div>
 
-      <div id="progress-container" class="global-progress-container">
-        <div class="global-progress-bar">
-          <div id="progress-fill" class="global-progress-fill"></div>
-          <div class="global-progress-shimmer"></div>
-        </div>
-        <div id="progress-text" class="global-progress-text">Processing...</div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title-group">
-            <span class="section-icon">⚙️</span>
-            <span class="section-title">Extension Status</span>
-          </div>
-          <div class="status-indicator">
-            <div id="status-dot" class="status-dot"></div>
-            <span id="extension-status" class="status-text">Enabled</span>
-          </div>
-        </div>
-        <div class="toggle-control">
-          <span>Enable Extension</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="extension-toggle" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title-group">
-            <span class="section-icon">📊</span>
-            <span class="section-title">Session Management</span>
-          </div>
-        </div>
-        <button id="new-session-btn" class="btn btn-secondary">
-          <span class="btn-icon">🔄</span>
-          New Session
+      <!-- Navigation -->
+      <div class="nav-section">
+        <button id="go-to-settings-btn" class="nav-btn">
+          <span>⚙️</span>
+          API Settings
         </button>
-        <div id="total-sessions-info" class="total-sessions-info"></div>
       </div>
 
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title-group">
-            <span class="section-icon">🔍</span>
-            <span class="section-title">Form Field Detection</span>
-          </div>
-          <span id="form-fields-count" class="count-badge">0 fields</span>
+      <!-- Global Progress Bar -->
+      <div id="progress-container" class="progress-container">
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill"></div>
         </div>
-        <button id="detect-fields-btn" class="btn btn-primary">
-          <span class="btn-icon">🔍</span>
-          Detect Form Fields
-        </button>
-        <div id="form-fields-display" class="form-fields-display">
-          <div class="empty-state">
-            <div class="empty-state-icon">📝</div>
-            <div class="empty-state-text">No form fields detected</div>
-          </div>
-        </div>
+        <div id="progress-text" class="progress-text">Processing...</div>
       </div>
 
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title-group">
-            <span class="section-icon">📷</span>
-            <span class="section-title">Image Upload</span>
-          </div>
-        </div>
+      <!-- Toggle Control -->
+      <div class="toggle-section">
+        <span class="toggle-label">Enable Extension</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="extension-toggle" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
 
-        <div class="data-source-tabs">
-          <button class="tab-button active" id="computer-option">
-            💻 Computer
-          </button>
-          <button class="tab-button" id="mobile-option">📱 Mobile</button>
-        </div>
-
-        <div id="computer-upload" class="tab-content active">
-          <div class="file-upload-section" id="file-upload-area">
-            <div class="file-upload-area">
-              <div class="file-upload-icon">📄</div>
-              <div class="file-upload-text">
-                Click to select or drag & drop images
-              </div>
-              <div class="file-upload-subtext">Supports: PNG, JPG, JPEG</div>
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Upload Section -->
+        <div class="section upload-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">📷</span>
+              Image Upload
             </div>
-            <input
-              type="file"
-              id="image-input"
-              class="file-input"
-              accept="image/*"
-              multiple
-            />
           </div>
-        </div>
+          <div class="upload-content">
+            <div class="tab-buttons">
+              <button class="tab-btn active" id="computer-option">
+                💻 Computer
+              </button>
+              <button class="tab-btn" id="mobile-option">📱 Mobile</button>
+            </div>
 
-   <div id="mobile-upload" class="tab-content" style="display: block;">
+            <div class="tab-content-container">
+              <div id="computer-upload" class="tab-content active">
+                <div class="upload-area" id="file-upload-area">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-text">Click or drag images here</div>
+                  <div class="upload-subtext">PNG, JPG, JPEG supported</div>
+                </div>
+                <input
+                  type="file"
+                  id="image-input"
+                  class="file-input"
+                  accept="image/*"
+                  multiple
+                />
+              </div>
+
+    <div id="mobile-upload" class="tab-content" style="display: block;">
   <button id="mobile-photo-btn" class="btn btn-primary" style="display: inline-block;">
     <span class="btn-icon">📱</span>
     Get Photos from Mobile
@@ -119,51 +83,53 @@
     <div id="mobile-status" class="mobile-status">Ready to fetch photos from mobile.</div>
     </div>
 </div>
+            </div>
 
-        <div id="image-thumbnails" class="image-thumbnails"></div>
-
-        <button id="process-images-btn" class="btn btn-primary" disabled>
-          <span class="btn-icon">🔍</span>
-          Process Images (OCR)
-        </button>
-      </div>
-
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title-group">
-            <span class="section-icon">💾</span>
-            <span class="section-title">Stored OCR Data</span>
-          </div>
-          <span id="ocr-count" class="count-badge">0 items</span>
-        </div>
-        <div id="ocr-data-display" class="ocr-data-display">
-          <div class="empty-state">
-            <div class="empty-state-icon">📄</div>
-            <div class="empty-state-text">No OCR data stored</div>
+            <div id="image-thumbnails" class="image-grid"></div>
+            <button id="process-images-btn" class="btn btn-primary" disabled>
+              <span>🔍</span>
+              Process Images (OCR)
+            </button>
           </div>
         </div>
-      </div>
 
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title-group">
-            <span class="section-icon">📝</span>
-            <span class="section-title">Form Actions</span>
+        <!-- OCR Data Section -->
+        <div class="section ocr-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">💾</span>
+              OCR Data
+            </div>
+            <span id="ocr-count" class="count-badge">0 items</span>
+          </div>
+          <div id="ocr-data-display" class="ocr-content">
+            <div class="empty-state">
+              <div class="empty-icon">📄</div>
+              <div class="empty-text">No OCR data stored</div>
+            </div>
+
           </div>
         </div>
-        <div class="form-actions-grid">
-          <button id="fill-form-btn" class="btn btn-primary" disabled>
-            <span class="btn-icon">✨</span>
-            Fill Form with OCR Data
-          </button>
-          <button id="clear-form-btn" class="btn btn-secondary">
-            <span class="btn-icon">🧹</span>
-            Clear Form Fields
-          </button>
+
+        <!-- Form Actions Section -->
+        <div class="section action-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">📝</span>
+              Form Actions
+            </div>
+          </div>
+          <div class="action-content">
+            <button id="fill-form-btn" class="btn btn-primary" disabled>
+              <span>✨</span>
+              Fill Form with OCR Data
+            </button>
+          </div>
         </div>
       </div>
 
-      <div id="response-container" class="status" style="display: none"></div>
+      <div id="response-container" class="status"></div>
+
     </div>
 
     <div id="mobile-ip-dialog" class="dialog-overlay" style="display: none;">

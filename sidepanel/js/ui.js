@@ -4,7 +4,6 @@ export const uiElements = {
   imageThumbnails: document.getElementById("image-thumbnails"),
   processImagesBtn: document.getElementById("process-images-btn"),
   fillFormBtn: document.getElementById("fill-form-btn"),
-  clearFormBtn: document.getElementById("clear-form-btn"),
   newSessionBtn: document.getElementById("new-session-btn"),
   responseContainer: document.getElementById("response-container"),
   extensionToggle: document.getElementById("extension-toggle"),
@@ -26,11 +25,6 @@ export const uiElements = {
   mobileSessionInfo: document.getElementById("mobile-session-info"),
   mobilePhotos: document.getElementById("mobile-photos"),
   stopMobileBtn: document.getElementById("stop-mobile-btn"),
-  // Form detection elements
-  detectFieldsBtn: document.getElementById("detect-fields-btn"),
-  formFieldsDisplay: document.getElementById("form-fields-display"),
-  formFieldsCount: document.getElementById("form-fields-count"),
-
   // NEW DIALOG ELEMENTS
   mobileIpDialog: document.getElementById("mobile-ip-dialog"),
   closeServerIpDialogBtn: document.getElementById("close-server-ip-dialog"),
@@ -47,7 +41,6 @@ export function initializeUIElements() {
     "image-thumbnails",
     "process-images-btn",
     "fill-form-btn",
-    "clear-form-btn",
     "new-session-btn",
     "response-container",
     "extension-toggle",
@@ -70,9 +63,6 @@ export function initializeUIElements() {
     "mobile-session-info",
     "mobile-photos",
     "stop-mobile-btn",
-    "detect-fields-btn",
-    "form-fields-display",
-    "form-fields-count",
     // New dialog elements
     "mobile-ip-dialog",
     "close-server-ip-dialog",
@@ -166,6 +156,10 @@ export function showProgress(show, text = "Processing...") {
 }
 
 export function showMessage(message, color, type = "info") {
+  if (!uiElements.responseContainer) {
+    console.warn("Response container not found");
+    return;
+  }
   // Show the status container
   uiElements.responseContainer.style.display = "block";
   uiElements.responseContainer.textContent = message;
@@ -199,19 +193,11 @@ export function showMessage(message, color, type = "info") {
   }
 }
 
-export function updateExtensionStatus(extensionEnabled) {
-  if (extensionEnabled) {
-    uiElements.extensionStatus.textContent = "Enabled";
-    uiElements.extensionStatus.className = "status-text";
-    uiElements.statusDot.className = "status-dot";
-  } else {
-    uiElements.extensionStatus.textContent = "Disabled";
-    uiElements.extensionStatus.className = "status-text disabled";
-    uiElements.statusDot.className = "status-dot disabled";
-  }
-}
-
 export async function updateOcrDataDisplay(sessionId) {
+  if (!uiElements.ocrCount || !uiElements.ocrDataDisplay) {
+    console.warn("OCR display elements not found");
+    return;
+  }
   try {
     const result = await window.chrome.storage.session.get(["ocrDataStore"]);
     const ocrData = result.ocrDataStore || {};
@@ -286,92 +272,10 @@ export async function updateOcrDataDisplay(sessionId) {
   }
 }
 
-export function updateFormFieldsDisplay(fields) {
-  if (!uiElements.formFieldsDisplay || !uiElements.formFieldsCount) {
-    console.warn("Form fields display elements not found");
-    return;
-  }
-
-  uiElements.formFieldsCount.textContent = `${fields.length} fields`;
-
-  if (fields.length === 0) {
-    uiElements.formFieldsDisplay.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">📝</div>
-        <div class="empty-state-text">No form fields detected</div>
-      </div>
-    `;
-  } else {
-    uiElements.formFieldsDisplay.innerHTML = "";
-    fields.forEach((field, index) => {
-      const div = document.createElement("div");
-      div.className = "form-field-item";
-
-      const header = document.createElement("div");
-      header.className = "form-field-header";
-
-      const title = document.createElement("div");
-      title.className = "form-field-title";
-      const fieldIcon = getFieldIcon(field.type);
-      title.textContent = `${fieldIcon} ${
-        field.label || field.name || field.id || `Field ${index + 1}`
-      }`;
-
-      const typeLabel = document.createElement("span");
-      typeLabel.className = "field-type-label";
-      typeLabel.textContent = field.type;
-
-      header.appendChild(title);
-      header.appendChild(typeLabel);
-
-      const details = document.createElement("div");
-      details.className = "form-field-details";
-      details.innerHTML = `
-        <strong>Type:</strong> ${field.type}<br>
-        ${
-          field.placeholder
-            ? `<strong>Placeholder:</strong> ${field.placeholder}<br>`
-            : ""
-        }
-        ${field.required ? `<strong>Required:</strong> Yes<br>` : ""}
-        ${
-          field.options.length > 0
-            ? `<strong>Options:</strong> ${field.options.length} choices<br>`
-            : ""
-        }
-        <strong>Selector:</strong> <code>${field.selector}</code>
-      `;
-
-      div.appendChild(header);
-      div.appendChild(details);
-      uiElements.formFieldsDisplay.appendChild(div);
-    });
-  }
-}
-
-function getFieldIcon(fieldType) {
-  const icons = {
-    text: "📝",
-    email: "📧",
-    password: "🔒",
-    tel: "📞",
-    number: "🔢",
-    date: "📅",
-    time: "⏰",
-    url: "🔗",
-    search: "🔍",
-    textarea: "📄",
-    select: "📋",
-    checkbox: "☑️",
-    radio: "🔘",
-    file: "📁",
-    range: "🎚️",
-    color: "🎨",
-  };
-  return icons[fieldType] || "📝";
-}
-
 export async function updateTotalSessionsInfo() {
+  if (!uiElements.totalSessionsInfo) {
+    return; // Element no longer exists, skip update
+  }
   try {
     const result = await window.chrome.storage.session.get(["ocrDataStore"]);
     const ocrDataStore = result.ocrDataStore || {};
@@ -388,13 +292,14 @@ export async function updateTotalSessionsInfo() {
 }
 
 export function updateButtonStates(hasImages, extensionEnabled, hasOcrData) {
+  if (!uiElements.processImagesBtn || !uiElements.fillFormBtn) {
+    console.warn("Button elements not found");
+    return;
+  }
   uiElements.processImagesBtn.disabled = !hasImages || !extensionEnabled;
   uiElements.fillFormBtn.disabled = !hasOcrData || !extensionEnabled;
   if (uiElements.detectFieldsBtn) {
     uiElements.detectFieldsBtn.disabled = !extensionEnabled;
-  }
-  if (uiElements.clearFormBtn) {
-    uiElements.clearFormBtn.disabled = !extensionEnabled;
   }
 }
 
@@ -457,6 +362,27 @@ export function updateImageThumbnails(images = [], onRemove = null) {
     imageContainer.appendChild(removeBtn);
     uiElements.imageThumbnails.appendChild(imageContainer);
   });
+}
+
+// Add this with other exported functions
+export function updateExtensionStatus(extensionEnabled) {
+  if (!uiElements.extensionStatus || !uiElements.statusDot) {
+    console.warn("Extension status elements not found");
+    return;
+  }
+
+  uiElements.extensionStatus.textContent = extensionEnabled
+    ? "Enabled"
+    : "Disabled";
+  uiElements.extensionStatus.className = extensionEnabled
+    ? "status-enabled"
+    : "status-disabled";
+
+  if (uiElements.statusDot) {
+    uiElements.statusDot.className = extensionEnabled
+      ? "status-dot enabled"
+      : "status-dot disabled";
+  }
 }
 
 // Listen for progress updates from background script

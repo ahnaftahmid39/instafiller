@@ -1,24 +1,20 @@
 // js/sidebar.js
-import {
-  initializeSession,
-  newSession,
-  toggleExtension,
-  removeOcrDataItem,
-  getSessionId,
-  getExtensionEnabled,
-  hasOcrData,
-} from "./session.js";
-import { processImages } from "./ocrProcessor.js";
 import { fillForm } from "./formFiller.js";
-import { clearForm } from "./formCleaner.js";
-import { detectFormFields } from "./formDetector.js";
-import { uiElements, updateButtonStates, updateMobileUI } from "./ui.js";
 import { clearSelectedImages, getSelectedImages } from "./imageHandler.js";
+import { processImages } from "./ocrProcessor.js";
+import {
+  getExtensionEnabled,
+  getSessionId,
+  hasOcrData,
+  initializeSession,
+  removeOcrDataItem,
+  toggleExtension,
+} from "./session.js";
+import { uiElements, updateButtonStates, updateMobileUI } from "./ui.js";
 // Only import what's needed from mobileCapture now
 import {
   initMobileCapture,
-  stopMobileSession,
-  showMobileIpDialog,
+  stopMobileSession
 } from "./mobileCapture.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -49,13 +45,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   uiElements.fillFormBtn.addEventListener("click", fillForm);
 
-  uiElements.clearFormBtn.addEventListener("click", clearForm);
-
-  uiElements.newSessionBtn.addEventListener("click", newSession);
-
-  // Form detection event listeners
-  uiElements.detectFieldsBtn?.addEventListener("click", detectFormFields);
-
   // Event listener for removing individual OCR data items (delegated from ui.js)
   document.addEventListener("removeOcrItem", (event) => {
     removeOcrDataItem(event.detail);
@@ -65,6 +54,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.addEventListener("clearSelectedImages", async () => {
     await clearSelectedImages();
   });
+
+  // Navigation functionality
+  document
+    .getElementById("go-to-settings-btn")
+    .addEventListener("click", () => {
+      // Navigate to home.html
+      window.location.href = "home.html";
+    });
 
   // Upload option switching
   uiElements.computerOption.addEventListener("click", () => {

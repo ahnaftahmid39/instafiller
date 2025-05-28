@@ -38,13 +38,18 @@ function getCurrentImagesCount() {
 
 export async function initializeSession() {
   try {
+    // Wait for DOM to be fully loaded
+    if (document.readyState !== "complete") {
+      await new Promise((resolve) => window.addEventListener("load", resolve));
+    }
+
     const result = await window.chrome.storage.session.get([
       "currentSessionId",
       "extensionEnabled",
     ]);
 
     currentSessionId = result.currentSessionId || generateSessionId();
-    extensionEnabled = result.extensionEnabled !== false; // Default to true
+    extensionEnabled = result.extensionEnabled !== false;
 
     if (!result.currentSessionId) {
       await window.chrome.storage.session.set({
@@ -52,20 +57,31 @@ export async function initializeSession() {
       });
     }
 
-    updateExtensionStatus(extensionEnabled);
-    await updateOcrDataDisplay(currentSessionId);
+    // Only update UI if elements exist
+    if (document.getElementById("extension-status")) {
+      updateExtensionStatus(extensionEnabled);
+    }
+    if (document.getElementById("ocr-data-display")) {
+      await updateOcrDataDisplay(currentSessionId);
+    }
 
-    // Check if there are already images selected
     const hasImages = getCurrentImagesCount();
-    updateButtonStates(
-      hasImages,
-      extensionEnabled,
-      await hasOcrData(currentSessionId)
-    );
-    showMessage("Extension loaded successfully", "#059669");
+    if (document.getElementById("process-images-btn")) {
+      updateButtonStates(
+        hasImages,
+        extensionEnabled,
+        await hasOcrData(currentSessionId)
+      );
+    }
+
+    if (document.getElementById("response-container")) {
+      showMessage("Extension loaded successfully", "#059669");
+    }
   } catch (error) {
     console.error("Error initializing session:", error);
-    showMessage("Error initializing extension", "#ef4444");
+    if (document.getElementById("response-container")) {
+      showMessage("Error initializing extension", "#ef4444");
+    }
   }
 }
 

@@ -10,7 +10,10 @@ export function getSelectedImages() {
 
 export async function clearSelectedImages() {
   selectedImages = [];
-  uiElements.imageInput.value = "";
+  // Make sure to reset the input
+  if (uiElements.imageInput) {
+    uiElements.imageInput.value = "";
+  }
   updateImageThumbnails();
   updateButtonStates(
     false,
@@ -45,31 +48,79 @@ export function updateImageThumbnails() {
     const container = document.createElement("div");
     container.className = "image-container";
 
-    const img = document.createElement("img");
-    img.src = image.dataUrl;
-    img.className = "image-thumbnail";
-    img.title = `${image.name} ${image.fromMobile ? "(Mobile)" : "(Computer)"}`;
+    // Create file type icon wrapper
+    const iconWrapper = document.createElement("div");
+    iconWrapper.className = "file-icon-wrapper";
 
-    const removeBtn = document.createElement("div");
+    // Add file type icon
+    const fileIcon = document.createElement("span");
+    fileIcon.className = "file-icon";
+    fileIcon.textContent = getFileIcon(image.mimeType);
+    iconWrapper.appendChild(fileIcon);
+
+    // Create name container
+    const nameContainer = document.createElement("div");
+    nameContainer.className = "name-container";
+
+    // Add file name
+    const nameElement = document.createElement("div");
+    nameElement.className = "image-name";
+    nameElement.textContent = image.name;
+
+    // Add source badge (Mobile/Computer)
+    const sourceBadge = document.createElement("span");
+    sourceBadge.className = `source-badge ${
+      image.fromMobile ? "mobile" : "computer"
+    }`;
+    sourceBadge.textContent = image.fromMobile ? "📱 Mobile" : "💻 Computer";
+
+    nameContainer.appendChild(nameElement);
+    nameContainer.appendChild(sourceBadge);
+
+    // Create remove button
+    const removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
     removeBtn.innerHTML = "×";
+    removeBtn.title = "Remove image";
     removeBtn.onclick = () => removeSelectedImage(image.id);
 
+    // Assemble container
+    container.appendChild(iconWrapper);
+    container.appendChild(nameContainer);
+    container.appendChild(removeBtn);
+
     if (image.fromMobile) {
-      img.style.border = "2px solid #8b5cf6";
+      container.classList.add("mobile-image");
     }
 
-    container.appendChild(img);
-    container.appendChild(removeBtn);
     uiElements.imageThumbnails.appendChild(container);
   });
+}
+
+// Helper function to determine file icon
+function getFileIcon(mimeType) {
+  switch (mimeType) {
+    case "image/jpeg":
+    case "image/jpg":
+      return "📸";
+    case "image/png":
+      return "🖼️";
+    case "image/gif":
+      return "🎯";
+    default:
+      return "📄";
+  }
 }
 
 // Event listener for image input
 uiElements.imageInput.addEventListener("change", async (event) => {
   const files = Array.from(event.target.files);
 
-  if (files.length === 0) return;
+  if (files.length === 0) {
+    // Reset the input value so the same file can be selected again
+    event.target.value = "";
+    return;
+  }
 
   for (const file of files) {
     if (file && file.type.startsWith("image/")) {
@@ -85,7 +136,14 @@ uiElements.imageInput.addEventListener("change", async (event) => {
         };
         await addImage(imageData);
       };
+      reader.onerror = () => {
+        showMessage(`Failed to read file: ${file.name}`, "error");
+      };
       reader.readAsDataURL(file);
+    } else {
+      showMessage(`Invalid file type: ${file.name}`, "error");
     }
   }
+  // Reset the input value after processing
+  event.target.value = "";
 });

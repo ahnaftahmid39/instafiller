@@ -60,9 +60,6 @@ export function initializeUIElements() {
     "mobile-session-info",
     "mobile-photos",
     "stop-mobile-btn",
-    "detect-fields-btn",
-    "form-fields-display",
-    "form-fields-count",
   ];
 
   const missingElements = requiredElements.filter(
@@ -150,6 +147,10 @@ export function showProgress(show, text = "Processing...") {
 }
 
 export function showMessage(message, color, type = "info") {
+  if (!uiElements.responseContainer) {
+    console.warn("Response container not found");
+    return;
+  }
   // Show the status container
   uiElements.responseContainer.style.display = "block";
   uiElements.responseContainer.textContent = message;
@@ -183,19 +184,11 @@ export function showMessage(message, color, type = "info") {
   }
 }
 
-export function updateExtensionStatus(extensionEnabled) {
-  if (extensionEnabled) {
-    uiElements.extensionStatus.textContent = "Enabled";
-    uiElements.extensionStatus.className = "status-text";
-    uiElements.statusDot.className = "status-dot";
-  } else {
-    uiElements.extensionStatus.textContent = "Disabled";
-    uiElements.extensionStatus.className = "status-text disabled";
-    uiElements.statusDot.className = "status-dot disabled";
-  }
-}
-
 export async function updateOcrDataDisplay(sessionId) {
+  if (!uiElements.ocrCount || !uiElements.ocrDataDisplay) {
+    console.warn("OCR display elements not found");
+    return;
+  }
   try {
     const result = await window.chrome.storage.session.get(["ocrDataStore"]);
     const ocrData = result.ocrDataStore || {};
@@ -290,6 +283,14 @@ export async function updateTotalSessionsInfo() {
 }
 
 export function updateButtonStates(hasImages, extensionEnabled, hasOcrData) {
+  if (
+    !uiElements.processImagesBtn ||
+    !uiElements.fillFormBtn ||
+    !uiElements.clearFormBtn
+  ) {
+    console.warn("Button elements not found");
+    return;
+  }
   uiElements.processImagesBtn.disabled = !hasImages || !extensionEnabled;
   uiElements.fillFormBtn.disabled = !hasOcrData || !extensionEnabled;
   if (uiElements.detectFieldsBtn) {
@@ -358,6 +359,27 @@ export function updateImageThumbnails(images = [], onRemove = null) {
     imageContainer.appendChild(removeBtn);
     uiElements.imageThumbnails.appendChild(imageContainer);
   });
+}
+
+// Add this with other exported functions
+export function updateExtensionStatus(extensionEnabled) {
+  if (!uiElements.extensionStatus || !uiElements.statusDot) {
+    console.warn("Extension status elements not found");
+    return;
+  }
+
+  uiElements.extensionStatus.textContent = extensionEnabled
+    ? "Enabled"
+    : "Disabled";
+  uiElements.extensionStatus.className = extensionEnabled
+    ? "status-enabled"
+    : "status-disabled";
+
+  if (uiElements.statusDot) {
+    uiElements.statusDot.className = extensionEnabled
+      ? "status-dot enabled"
+      : "status-dot disabled";
+  }
 }
 
 // Listen for progress updates from background script

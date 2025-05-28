@@ -45,21 +45,24 @@ export function updateImageThumbnails() {
     const container = document.createElement("div");
     container.className = "image-container";
 
-    const img = document.createElement("img");
-    img.src = image.dataUrl;
-    img.className = "image-thumbnail";
-    img.title = `${image.name} ${image.fromMobile ? "(Mobile)" : "(Computer)"}`;
+    const nameElement = document.createElement("div");
+    nameElement.className = "image-name";
+    nameElement.textContent = image.name;
+    nameElement.title = `${image.name} ${
+      image.fromMobile ? "(Mobile)" : "(Computer)"
+    }`;
 
-    const removeBtn = document.createElement("div");
+    const removeBtn = document.createElement("button"); // Changed to button
     removeBtn.className = "remove-btn";
     removeBtn.innerHTML = "×";
+    removeBtn.title = "Remove image"; // Added tooltip
     removeBtn.onclick = () => removeSelectedImage(image.id);
 
     if (image.fromMobile) {
-      img.style.border = "2px solid #8b5cf6";
+      container.classList.add("mobile-image"); // Using classList instead of style
     }
 
-    container.appendChild(img);
+    container.appendChild(nameElement);
     container.appendChild(removeBtn);
     uiElements.imageThumbnails.appendChild(container);
   });

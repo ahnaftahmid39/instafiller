@@ -10,7 +10,10 @@ export function getSelectedImages() {
 
 export async function clearSelectedImages() {
   selectedImages = [];
-  uiElements.imageInput.value = "";
+  // Make sure to reset the input
+  if (uiElements.imageInput) {
+    uiElements.imageInput.value = "";
+  }
   updateImageThumbnails();
   updateButtonStates(
     false,
@@ -72,7 +75,11 @@ export function updateImageThumbnails() {
 uiElements.imageInput.addEventListener("change", async (event) => {
   const files = Array.from(event.target.files);
 
-  if (files.length === 0) return;
+  if (files.length === 0) {
+    // Reset the input value so the same file can be selected again
+    event.target.value = "";
+    return;
+  }
 
   for (const file of files) {
     if (file && file.type.startsWith("image/")) {
@@ -88,7 +95,14 @@ uiElements.imageInput.addEventListener("change", async (event) => {
         };
         await addImage(imageData);
       };
+      reader.onerror = () => {
+        showMessage(`Failed to read file: ${file.name}`, "error");
+      };
       reader.readAsDataURL(file);
+    } else {
+      showMessage(`Invalid file type: ${file.name}`, "error");
     }
   }
+  // Reset the input value after processing
+  event.target.value = "";
 });

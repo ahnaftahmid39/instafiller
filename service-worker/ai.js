@@ -87,7 +87,7 @@ Here is the form's HTML string:
 ${filteredForm}
 ---
 
-For each relevant piece of information in the OCR text, identify the best matching form field from the provided list. Respond with a JSON object where keys are the identified form field names (exactly as they appear in the provided list) and values are the corresponding extracted data from the OCR text. Sometimes name could be generated. For example, name='generated-name-1'. Do not mix name with labels. Do not change name attribute. Value could be space separated. Respond with only a PLAIN JSON string, No additional text or explanation. NO formatting. NO whitespaces. NO markdown blocks. Your response will be array of {name:value} pair.`;
+For each relevant piece of information in the OCR text, identify the best matching form field from the provided list. Respond with a JSON object where keys are the identified form field names (exactly as they appear in the provided list) and values are the corresponding extracted data from the OCR text. Sometimes name could be generated. For example, name='generated-name-1'. Do not mix name with labels. Do not change name attribute. Value could be space separated. For checkboxes value should be array of strings. Respond with only a PLAIN JSON string, No additional text or explanation. NO formatting. NO whitespaces. NO markdown blocks. Your response will be array of {name:value} pair.`;
 
   console.log("Mapping prompt:", prompt);
   return await callGeminiForMapping(prompt);

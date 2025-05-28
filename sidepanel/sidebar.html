@@ -73,26 +73,16 @@
                 />
               </div>
 
-              <div id="mobile-upload" class="tab-content mobile-content">
-                <button id="mobile-photo-btn" class="btn btn-primary">
-                  <span>📱</span>
-                  Get Photos from Mobile
-                </button>
-                <div id="qr-container" class="qr-container">
-                  <div class="qr-title">📱 Scan QR Code</div>
-                  <div id="qr-code" class="qr-code"></div>
-                  <div class="mobile-status">
-                    <div id="mobile-status">Waiting for connection...</div>
-                  </div>
-                  <button
-                    id="stop-mobile-btn"
-                    class="btn btn-danger"
-                    style="margin-top: 8px"
-                  >
-                    Stop Session
-                  </button>
-                </div>
-              </div>
+    <div id="mobile-upload" class="tab-content" style="display: block;">
+  <button id="mobile-photo-btn" class="btn btn-primary" style="display: inline-block;">
+    <span class="btn-icon">📱</span>
+    Get Photos from Mobile
+  </button>
+
+  <div class="mobile-session-status-display">
+    <div id="mobile-status" class="mobile-status">Ready to fetch photos from mobile.</div>
+    </div>
+</div>
             </div>
 
             <div id="image-thumbnails" class="image-grid"></div>
@@ -117,6 +107,7 @@
               <div class="empty-icon">📄</div>
               <div class="empty-text">No OCR data stored</div>
             </div>
+
           </div>
         </div>
 
@@ -138,6 +129,29 @@
       </div>
 
       <div id="response-container" class="status"></div>
+
+    </div>
+
+    <div id="mobile-ip-dialog" class="dialog-overlay" style="display: none;">
+      <div class="dialog-content">
+        <h2>🌐 Connect to Server</h2>
+        <p>Enter the IP address of your backend server:</p>
+
+        <div class="input-group">
+          <label for="server-ip-input">Server IP Address:</label>
+          <input type="text" id="server-ip-input" placeholder="e.g., http://192.168.1.100:3000" />
+        </div>
+
+        <button id="connect-server-ip-btn" class="btn btn-primary dialog-btn">Connect</button>
+
+        <div class="saved-ips-section">
+          <h3>Saved Server IPs:</h3>
+          <ul id="saved-server-ips-list" class="saved-ips-list">
+            </ul>
+        </div>
+
+        <button id="close-server-ip-dialog" class="btn btn-secondary dialog-btn">Close</button>
+      </div>
     </div>
 
     <script type="module" src="js/constants.js"></script>

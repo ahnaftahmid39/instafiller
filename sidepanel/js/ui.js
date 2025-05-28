@@ -20,12 +20,17 @@ export const uiElements = {
   computerUpload: document.getElementById("computer-upload"),
   mobileUpload: document.getElementById("mobile-upload"),
   mobilePhotoBtn: document.getElementById("mobile-photo-btn"),
-  qrContainer: document.getElementById("qr-container"),
-  qrCode: document.getElementById("qr-code"),
+  // Removed qrContainer and qrCode
   mobileStatus: document.getElementById("mobile-status"),
   mobileSessionInfo: document.getElementById("mobile-session-info"),
   mobilePhotos: document.getElementById("mobile-photos"),
   stopMobileBtn: document.getElementById("stop-mobile-btn"),
+  // NEW DIALOG ELEMENTS
+  mobileIpDialog: document.getElementById("mobile-ip-dialog"),
+  closeServerIpDialogBtn: document.getElementById("close-server-ip-dialog"),
+  connectServerIpBtn: document.getElementById("connect-server-ip-btn"),
+  serverIpInput: document.getElementById("server-ip-input"),
+  savedServerIpsList: document.getElementById("saved-server-ips-list"),
 };
 
 // Add this function at the beginning of the file
@@ -52,12 +57,18 @@ export function initializeUIElements() {
     "computer-upload",
     "mobile-upload",
     "mobile-photo-btn",
-    "qr-container",
-    "qr-code",
+    // "qr-container", // Removed
+    // "qr-code",      // Removed
     "mobile-status",
     "mobile-session-info",
     "mobile-photos",
     "stop-mobile-btn",
+    // New dialog elements
+    "mobile-ip-dialog",
+    "close-server-ip-dialog",
+    "connect-server-ip-btn",
+    "server-ip-input",
+    "saved-server-ips-list",
   ];
 
   const missingElements = requiredElements.filter(
@@ -242,13 +253,13 @@ export async function updateOcrDataDisplay(sessionId) {
         const details = document.createElement("div");
         details.className = "ocr-item-details";
         details.innerHTML = `
-                    <strong>Fields extracted:</strong> ${
-                      Object.keys(item.mappedData).length
-                    }<br>
-                    <strong>Processed:</strong> ${new Date(
-                      item.timestamp
-                    ).toLocaleString()}
-                `;
+          <strong>Fields extracted:</strong> ${
+            Object.keys(item.mappedData).length
+          }<br>
+          <strong>Processed:</strong> ${new Date(
+            item.timestamp
+          ).toLocaleString()}
+        `;
 
         div.appendChild(header);
         div.appendChild(details);
@@ -292,19 +303,20 @@ export function updateButtonStates(hasImages, extensionEnabled, hasOcrData) {
   }
 }
 
-export function updateMobileUI(isSessionActive) {
-  if (isSessionActive) {
-    uiElements.mobilePhotoBtn.disabled = true;
-    uiElements.stopMobileBtn.style.display = "inline-block";
+export function updateMobileUI(isConnected) {
+  if (isConnected) {
+    uiElements.mobilePhotoBtn.style.display = "none";
+    // uiElements.stopMobileBtn.style.display = 'inline-block'; // No longer needed
+    // uiElements.mobileSessionInfo.style.display = 'block'; // No longer needed
+    uiElements.mobileStatus.style.display = "block"; // Show status
   } else {
-    uiElements.mobilePhotoBtn.disabled = false;
-    uiElements.stopMobileBtn.style.display = "none";
-    uiElements.qrContainer.style.display = "none";
-    uiElements.mobilePhotos.innerHTML = "";
-    // When stopping mobile UI, ensure the QR code image is cleared
-    if (uiElements.qrCode) {
-      uiElements.qrCode.innerHTML = "";
-    }
+    uiElements.mobilePhotoBtn.style.display = "inline-block";
+    // uiElements.stopMobileBtn.style.display = 'none'; // No longer needed
+    // uiElements.mobileSessionInfo.style.display = 'none'; // No longer needed
+    uiElements.mobileStatus.style.display = "block"; // Still show status, but reset text
+    uiElements.mobileStatus.textContent = "Ready to fetch photos from mobile.";
+    uiElements.mobileStatus.style.color = "#6c757d";
+    uiElements.mobilePhotos.innerHTML = ""; // Clear displayed photo
   }
 }
 

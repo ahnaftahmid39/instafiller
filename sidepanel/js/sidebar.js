@@ -1,21 +1,28 @@
 // js/sidebar.js
-import {
-  initializeSession,
-  toggleExtension,
-  removeOcrDataItem,
-  getSessionId,
-  getExtensionEnabled,
-  hasOcrData,
-} from "./session.js";
-import { processImages } from "./ocrProcessor.js";
 import { fillForm } from "./formFiller.js";
-import { uiElements, updateButtonStates } from "./ui.js";
 import { clearSelectedImages, getSelectedImages } from "./imageHandler.js";
-import { stopMobileSession } from "./mobileCapture.js";
+import { processImages } from "./ocrProcessor.js";
+import {
+  getExtensionEnabled,
+  getSessionId,
+  hasOcrData,
+  initializeSession,
+  removeOcrDataItem,
+  toggleExtension,
+} from "./session.js";
+import { uiElements, updateButtonStates, updateMobileUI } from "./ui.js";
+// Only import what's needed from mobileCapture now
+import {
+  initMobileCapture,
+  stopMobileSession
+} from "./mobileCapture.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // Initialize the application session
   initializeSession();
+
+  // Initialize mobile capture module (sets up its event listeners)
+  initMobileCapture();
 
   // Set up file upload area click handler
   const fileUploadArea = document.getElementById("file-upload-area");
@@ -23,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (fileUploadArea && imageInput) {
     fileUploadArea.addEventListener("click", (e) => {
-      if (e.target === imageInput) return; // Don't trigger if clicking the input itself
+      if (e.target === imageInput) return;
       e.preventDefault();
       imageInput.click();
     });
@@ -62,7 +69,8 @@ document.addEventListener("DOMContentLoaded", () => {
     uiElements.mobileOption.classList.remove("active");
     uiElements.computerUpload.style.display = "block";
     uiElements.mobileUpload.style.display = "none";
-    stopMobileSession(); // Stop mobile session if switching to computer upload
+    // No explicit stopMobileSession needed here anymore as there's no ongoing session
+    updateMobileUI(false); // Ensure mobile UI elements are reset
   });
 
   uiElements.mobileOption.addEventListener("click", () => {
@@ -70,11 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
     uiElements.computerOption.classList.remove("active");
     uiElements.computerUpload.style.display = "none";
     uiElements.mobileUpload.style.display = "block";
+    updateMobileUI(false); // Initialize mobile UI to its default state
   });
 
   // Update button states initially and when images are selected/deselected
-  // This will be called by imageHandler.js and session.js
-  // For initial load, we need to manually update after session init
   setTimeout(async () => {
     updateButtonStates(
       getSelectedImages().length > 0,
@@ -83,8 +90,11 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }, 100);
 
-  // Cleanup on page unload
+  // Initialize the mobile UI state on DOMContentLoaded
+  updateMobileUI(false);
+
+  // Cleanup on page unload (stopMobileSession can be an empty stub or removed)
   window.addEventListener("beforeunload", () => {
-    stopMobileSession();
+    stopMobileSession(); // This will just reset UI state now
   });
 });

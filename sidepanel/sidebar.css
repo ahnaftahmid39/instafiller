@@ -636,35 +636,27 @@
     display: block;
   }
 
+  #mobile-upload {
+    padding: 16px;
+    text-align: center;
+  }
+
+  #mobile-photo-btn {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
   .qr-container {
     display: none;
     text-align: center;
-    padding: 12px;
+    padding: 16px;
     background: hsl(var(--muted) / 0.3);
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
-    margin-bottom: 10px;
   }
 
-  .qr-title {
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: hsl(var(--foreground));
-  }
-
-  .qr-code {
-    margin: 8px auto;
-    padding: 8px;
-    background: white;
-    border-radius: var(--radius);
-    display: inline-block;
-  }
-
-  .mobile-status {
-    font-size: 10px;
-    color: hsl(var(--muted-foreground));
-    margin-top: 6px;
+  .qr-container.active {
+    display: block;
   }
 
   /* Scrollbar Styling */
@@ -787,6 +779,227 @@
     .section:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 20px hsl(var(--primary) / 0.1);
+    }
+  }
+
+  /* Tab Content Container - Prevents shifting */
+  .tab-content-container {
+    position: relative;
+    min-height: 140px; /* Fixed height to prevent shifting */
+  }
+
+  .tab-content {
+    position: relative; /* Change from absolute to relative */
+    display: none; /* Use display none instead of opacity/visibility */
+    width: 100%;
+  }
+
+  .tab-content.active {
+    display: block; /* Show active tab */
+    opacity: 1;
+  }
+
+  /* OCR Section - Make it properly scrollable */
+  .ocr-section {
+    max-height: 400px; /* Fixed max height */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ocr-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    min-height: 0;
+    max-height: 350px; /* Ensure scrollable area */
+  }
+
+  /* Enhanced OCR Item Styling */
+  .ocr-item {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--muted) / 0.2) 100%
+    );
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ocr-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      hsl(var(--primary)) 0%,
+      hsl(280 100% 70%) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .ocr-item:hover {
+    border-color: hsl(var(--primary) / 0.4);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card)) 0%,
+      hsl(var(--primary) / 0.05) 100%
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px hsl(var(--primary) / 0.15);
+  }
+
+  .ocr-item:hover::before {
+    opacity: 1;
+  }
+
+  .ocr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .ocr-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: hsl(var(--foreground));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ocr-title::before {
+    content: "📄";
+    font-size: 16px;
+  }
+
+  .ocr-timestamp {
+    font-size: 10px;
+    color: hsl(var(--muted-foreground));
+    background: hsl(var(--muted) / 0.3);
+    padding: 2px 6px;
+    border-radius: 10px;
+    border: 1px solid hsl(var(--border));
+  }
+
+  .ocr-preview {
+    font-size: 11px;
+    color: hsl(var(--muted-foreground));
+    line-height: 1.4;
+    margin-bottom: 8px;
+    max-height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+
+  .ocr-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .ocr-stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    background: hsl(var(--secondary) / 0.3);
+    border-radius: 8px;
+    border: 1px solid hsl(var(--border));
+  }
+
+  .ocr-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .ocr-action-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    background: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ocr-action-btn:hover {
+    background: hsl(var(--accent));
+    border-color: hsl(var(--primary) / 0.3);
+    transform: translateY(-1px);
+  }
+
+  .ocr-action-btn.delete {
+    background: hsl(var(--destructive) / 0.1);
+    border-color: hsl(var(--destructive) / 0.3);
+    color: hsl(var(--destructive));
+  }
+
+  .ocr-action-btn.delete:hover {
+    background: hsl(var(--destructive) / 0.2);
+    border-color: hsl(var(--destructive));
+  }
+
+  /* Mobile Content Adjustments */
+  .mobile-content {
+    display: none;
+  }
+
+  .mobile-content.active {
+    display: block;
+  }
+
+  /* Responsive adjustments for OCR section */
+  @media (max-width: 768px) {
+    .ocr-section {
+      max-height: 300px;
+    }
+
+    .ocr-content {
+      max-height: 250px;
+    }
+
+    .tab-content-container {
+      min-height: 120px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ocr-section {
+      max-height: 250px;
+    }
+
+    .ocr-content {
+      max-height: 200px;
+    }
+
+    .tab-content-container {
+      min-height: 100px;
+    }
+
+    .ocr-item {
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .ocr-actions {
+      flex-wrap: wrap;
     }
   }
 }

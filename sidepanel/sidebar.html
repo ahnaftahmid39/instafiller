@@ -57,39 +57,41 @@
               <button class="tab-btn" id="mobile-option">📱 Mobile</button>
             </div>
 
-            <div id="computer-upload" class="tab-content active">
-              <div class="upload-area" id="file-upload-area">
-                <div class="upload-icon">📄</div>
-                <div class="upload-text">Click or drag images here</div>
-                <div class="upload-subtext">PNG, JPG, JPEG supported</div>
-              </div>
-              <input
-                type="file"
-                id="image-input"
-                class="file-input"
-                accept="image/*"
-                multiple
-              />
-            </div>
-
-            <div id="mobile-upload" class="tab-content mobile-content">
-              <button id="mobile-photo-btn" class="btn btn-primary">
-                <span>📱</span>
-                Get Photos from Mobile
-              </button>
-              <div id="qr-container" class="qr-container">
-                <div class="qr-title">📱 Scan QR Code</div>
-                <div id="qr-code" class="qr-code"></div>
-                <div class="mobile-status">
-                  <div id="mobile-status">Waiting for connection...</div>
+            <div class="tab-content-container">
+              <div id="computer-upload" class="tab-content active">
+                <div class="upload-area" id="file-upload-area">
+                  <div class="upload-icon">📄</div>
+                  <div class="upload-text">Click or drag images here</div>
+                  <div class="upload-subtext">PNG, JPG, JPEG supported</div>
                 </div>
-                <button
-                  id="stop-mobile-btn"
-                  class="btn btn-danger"
-                  style="margin-top: 8px"
-                >
-                  Stop Session
+                <input
+                  type="file"
+                  id="image-input"
+                  class="file-input"
+                  accept="image/*"
+                  multiple
+                />
+              </div>
+
+              <div id="mobile-upload" class="tab-content mobile-content">
+                <button id="mobile-photo-btn" class="btn btn-primary">
+                  <span>📱</span>
+                  Get Photos from Mobile
                 </button>
+                <div id="qr-container" class="qr-container">
+                  <div class="qr-title">📱 Scan QR Code</div>
+                  <div id="qr-code" class="qr-code"></div>
+                  <div class="mobile-status">
+                    <div id="mobile-status">Waiting for connection...</div>
+                  </div>
+                  <button
+                    id="stop-mobile-btn"
+                    class="btn btn-danger"
+                    style="margin-top: 8px"
+                  >
+                    Stop Session
+                  </button>
+                </div>
               </div>
             </div>
 

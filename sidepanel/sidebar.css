@@ -608,66 +608,6 @@ input:checked + .slider:before {
   background-color: hsl(var(--muted) / 0.8);
 }
 
-/* Form Fields Display */
-.form-fields-display {
-  max-height: 300px;
-  overflow-y: auto;
-  font-size: 14px;
-}
-
-.form-field-item {
-  background-color: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
-  padding: 12px;
-  margin: 8px 0;
-  transition: all 0.2s;
-}
-
-.form-field-item:hover {
-  border-color: hsl(var(--primary));
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-}
-
-.form-field-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
-  gap: 8px;
-}
-
-.form-field-title {
-  font-weight: 500;
-  color: hsl(var(--foreground));
-  font-size: 14px;
-  flex: 1;
-}
-
-.field-type-label {
-  background-color: hsl(var(--secondary));
-  color: hsl(var(--secondary-foreground));
-  padding: 2px 6px;
-  border-radius: calc(var(--radius) - 2px);
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
-.form-field-details {
-  font-size: 12px;
-  color: hsl(var(--muted-foreground));
-  line-height: 1.4;
-}
-
-.form-field-details code {
-  background-color: hsl(var(--muted));
-  padding: 1px 4px;
-  border-radius: 2px;
-  font-size: 11px;
-  color: hsl(var(--foreground));
-}
-
 /* OCR Data Display */
 .ocr-data-display {
   max-height: 300px;
@@ -778,24 +718,20 @@ input:checked + .slider:before {
 }
 
 /* Scrollbar Styling */
-.ocr-data-display::-webkit-scrollbar,
-.form-fields-display::-webkit-scrollbar {
+.ocr-data-display::-webkit-scrollbar {
   width: 6px;
 }
 
-.ocr-data-display::-webkit-scrollbar-track,
-.form-fields-display::-webkit-scrollbar-track {
+.ocr-data-display::-webkit-scrollbar-track {
   background: hsl(var(--muted));
 }
 
-.ocr-data-display::-webkit-scrollbar-thumb,
-.form-fields-display::-webkit-scrollbar-thumb {
+.ocr-data-display::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 3px;
 }
 
-.ocr-data-display::-webkit-scrollbar-thumb:hover,
-.form-fields-display::-webkit-scrollbar-thumb:hover {
+.ocr-data-display::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
 }
 

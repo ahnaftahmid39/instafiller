@@ -1,7 +1,6 @@
 // js/sidebar.js
 import {
   initializeSession,
-  newSession,
   toggleExtension,
   removeOcrDataItem,
   getSessionId,
@@ -11,7 +10,6 @@ import {
 import { processImages } from "./ocrProcessor.js";
 import { fillForm } from "./formFiller.js";
 import { clearForm } from "./formCleaner.js";
-import { detectFormFields } from "./formDetector.js";
 import { uiElements, updateButtonStates } from "./ui.js";
 import { clearSelectedImages, getSelectedImages } from "./imageHandler.js";
 import { stopMobileSession } from "./mobileCapture.js";
@@ -42,9 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
   uiElements.fillFormBtn.addEventListener("click", fillForm);
 
   uiElements.clearFormBtn.addEventListener("click", clearForm);
-
-  // Form detection event listeners
-  uiElements.detectFieldsBtn?.addEventListener("click", detectFormFields);
 
   // Event listener for removing individual OCR data items (delegated from ui.js)
   document.addEventListener("removeOcrItem", (event) => {

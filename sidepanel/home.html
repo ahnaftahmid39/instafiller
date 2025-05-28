@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Key Setup - Smart Form Filler</title>
+    <link rel="stylesheet" href="sidebar.css" />
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🤖 Smart Form Filler</h1>
+        <p>API Key Setup</p>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">🔑</span>
+            <span class="section-title">Gemini API Key</span>
+          </div>
+        </div>
+
+        <div class="api-key-container">
+          <div class="input-group">
+            <input
+              type="password"
+              id="api-key-input"
+              class="api-key-input"
+              placeholder="Enter your Gemini API key"
+            />
+            <button id="toggle-visibility" class="toggle-visibility-btn">
+              👁️
+            </button>
+          </div>
+
+          <div class="button-group">
+            <button id="save-key-btn" class="btn btn-primary" disabled>
+              <span class="btn-icon">💾</span>
+              Save API Key
+            </button>
+            <button id="test-key-btn" class="btn btn-secondary" disabled>
+              <span class="btn-icon">🔍</span>
+              Test Key
+            </button>
+          </div>
+        </div>
+
+        <div id="status-container" class="status" style="display: none"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">📝</span>
+            <span class="section-title">How to Get a Gemini API Key</span>
+          </div>
+        </div>
+
+        <div class="instructions">
+          <ol>
+            <li>
+              <strong>Visit Google AI Studio</strong>
+              <p>
+                Go to
+                <a href="https://aistudio.google.com/" target="_blank"
+                  >https://aistudio.google.com/</a
+                >
+              </p>
+            </li>
+            <li>
+              <strong>Sign in with your Google account</strong>
+              <p>Use your existing Google account or create a new one</p>
+            </li>
+            <li>
+              <strong>Get API Key</strong>
+              <p>Click on "Get API key" in the top right corner</p>
+            </li>
+            <li>
+              <strong>Create a new API key</strong>
+              <p>
+                Click "Create API key in new project" or use an existing project
+              </p>
+            </li>
+            <li>
+              <strong>Copy your API key</strong>
+              <p>Copy the generated API key (starts with "AIzaSy...")</p>
+            </li>
+            <li>
+              <strong>Paste it above</strong>
+              <p>
+                Paste the key in the input field above and click "Save API Key"
+              </p>
+            </li>
+          </ol>
+
+          <div class="note">
+            <p>
+              <strong>Note:</strong> Your API key is stored locally on your
+              device and is never sent to our servers. It's used only to
+              communicate directly with Google's Gemini API.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div id="navigation-section" class="section" style="display: none">
+        <div class="section-header">
+          <div class="section-title-group">
+            <span class="section-icon">🚀</span>
+            <span class="section-title">Ready to Go!</span>
+          </div>
+        </div>
+        <button id="go-to-main-btn" class="btn btn-primary">
+          <span class="btn-icon">📝</span>
+          Go to Form Filler
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="js/home.js"></script>
+  </body>
+</html>

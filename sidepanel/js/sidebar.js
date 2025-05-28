@@ -58,6 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
     await clearSelectedImages();
   });
 
+  // Navigation functionality
+  document
+    .getElementById("go-to-settings-btn")
+    .addEventListener("click", () => {
+      // Navigate to home.html
+      window.location.href = "home.html";
+    });
+
   // Upload option switching
   uiElements.computerOption.addEventListener("click", () => {
     uiElements.computerOption.classList.add("active");

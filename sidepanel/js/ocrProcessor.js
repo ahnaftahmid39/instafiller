@@ -11,19 +11,19 @@ import {
 
 export async function processImages() {
   if (!getExtensionEnabled()) {
-    showMessage("Extension is disabled", "#ef4444");
+    showMessage("Extension is disabled", "#000");
     return;
   }
 
   const imagesToProcess = getSelectedImages();
   if (imagesToProcess.length === 0) {
-    showMessage("Please select images first.", "#d97706");
+    showMessage("Please select images first.", "#000");
     return;
   }
 
   showProgress(true);
-  uiElements.processImagesBtn.disabled = true;
-  showMessage("Processing images...", "#2563eb");
+  // uiElements.processImagesBtn.disabled = true;
+  showMessage("Processing images...", "#000");
 
   try {
     console.log(
@@ -54,7 +54,7 @@ export async function processImages() {
     if (response && response.status === "success") {
       showMessage(
         `Successfully processed ${imagesToProcess.length} images!`,
-        "#059669"
+        "#000"
       );
       clearSelectedImages(); // Clear selected images after processing
       await updateOcrDataDisplay(getSessionId());
@@ -65,7 +65,7 @@ export async function processImages() {
         await hasOcrData(getSessionId())
       );
     } else {
-      showMessage(`Error: ${response?.message || "Unknown error"}`, "#ef4444");
+      showMessage(`Error: ${response?.message || "Unknown error"}`, "#000");
       // Keep current images state on error
       const hasImages = getSelectedImages().length > 0;
       updateButtonStates(
@@ -76,7 +76,7 @@ export async function processImages() {
     }
   } catch (error) {
     console.error("Error processing images:", error);
-    showMessage(`Error: ${error.message}`, "#ef4444");
+    showMessage(`Error: ${error.message}`, "#000");
     // Keep current images state on error
     const hasImages = getSelectedImages().length > 0;
     updateButtonStates(
@@ -86,14 +86,14 @@ export async function processImages() {
     );
   } finally {
     showProgress(false);
-    uiElements.processImagesBtn.disabled = false;
+    // uiElements.processImagesBtn.disabled = false;
   }
 }
 
 export async function processNewMobilePhoto(imageData) {
   try {
     showProgress(true, "Processing mobile photo...");
-    showMessage("Processing photo from mobile...", "#2563eb");
+    showMessage("Processing photo from mobile...", "#000");
 
     const response = await new Promise((resolve, reject) => {
       window.chrome.runtime.sendMessage(
@@ -121,18 +121,18 @@ export async function processNewMobilePhoto(imageData) {
         getExtensionEnabled(),
         await hasOcrData(getSessionId())
       );
-      showMessage("Mobile photo processed successfully!", "#059669");
+      showMessage("Mobile photo processed successfully!", "#000");
     } else {
       showMessage(
         `Error processing mobile photo: ${
           response?.message || "Unknown error"
         }`,
-        "#ef4444"
+        "#000"
       );
     }
   } catch (error) {
     console.error("Error processing mobile photo:", error);
-    showMessage(`Error processing mobile photo: ${error.message}`, "#ef4444");
+    showMessage(`Error processing mobile photo: ${error.message}`, "#000");
   } finally {
     showProgress(false);
   }

@@ -1,7 +1,6 @@
 // js/mobileCapture.js
 import { uiElements, updateMobileUI } from "./ui.js";
 import { addImage } from "./imageHandler.js"; // <-- CORRECTED: Import 'addImage' instead
-import { getSessionId } from "./session.js";
 
 // Stores the currently used server URL, not a 'session' ID
 let currentServerUrl = "";
@@ -33,6 +32,12 @@ async function addRecentServerIP(ip) {
 // --- UI Dialog Functions ---
 export async function showMobileIpDialog() {
   uiElements.mobileIpDialog.style.display = "flex";
+  // currentServerUrl = await getStoredServerUrl();
+  // uiElements.serverIpInput.value = currentServerUrl;
+  // renderSavedServerIPs();
+}
+
+export async function initializeIPAddress() {
   currentServerUrl = await getStoredServerUrl();
   uiElements.serverIpInput.value = currentServerUrl;
   renderSavedServerIPs();
@@ -53,9 +58,13 @@ function renderSavedServerIPs() {
     } else {
       ips.forEach((ip) => {
         const li = document.createElement("li");
-        li.textContent = ip;
+        // li.textContent = ip;
         li.classList.add("saved-ip-item");
-        li.addEventListener("click", () => {
+        li.innerHTML = `<span class="saved-ip-item-text">${ip}</span><span class="saved-ip-item-delete">❌</span>`;
+        li.addEventListener("click", (e) => {
+          if (e.target.closest(".saved-ip-item-delete")) {
+            return;
+          }
           uiElements.serverIpInput.value = ip;
         });
         uiElements.savedServerIpsList.appendChild(li);
@@ -73,12 +82,12 @@ async function fetchPhotoFromMobile(serverIp) {
   }
 
   currentServerUrl = serverIp; // Set the URL for this fetch operation
-  await setStoredServerUrl(currentServerUrl); // Persist the chosen IP
-  await addRecentServerIP(currentServerUrl); // Add to recent IPs list
+  // await setStoredServerUrl(currentServerUrl); // Persist the chosen IP
+  // await addRecentServerIP(currentServerUrl); // Add to recent IPs list
 
   const photoFetchUrl = `${currentServerUrl}/last_photo`;
-  uiElements.mobileStatus.textContent = "Fetching latest photo...";
-  uiElements.mobileStatus.style.color = "#007bff";
+  // uiElements.mobileStatus.textContent = "Fetching latest photo...";
+  // uiElements.mobileStatus.style.color = "#007bff";
   // Clear previous photo display while fetching
 
   chrome.runtime.sendMessage(
@@ -86,14 +95,15 @@ async function fetchPhotoFromMobile(serverIp) {
     (response) => {
       if (chrome.runtime.lastError) {
         console.error("Runtime error:", chrome.runtime.lastError.message);
-        uiElements.mobileStatus.textContent = `Error: ${chrome.runtime.lastError.message}`;
-        uiElements.mobileStatus.style.color = "#dc3545";
+        // uiElements.mobileStatus.textContent = `Error: ${chrome.runtime.lastError.message}`;
+        // uiElements.mobileStatus.style.color = "#dc3545";
         return;
       }
 
       if (response && response.success) {
-        uiElements.mobileStatus.textContent = "Photo received!";
-        uiElements.mobileStatus.style.color = "#28a745";
+        console.log("Photo received!");
+        // uiElements.mobileStatus.textContent = "Photo received!";
+        // uiElements.mobileStatus.style.color = "#28a745";
 
         // Create an image data object compatible with your addImage function
         const imageData = {
@@ -184,17 +194,15 @@ async function handleConnectAndFetch() {
 // --- Initialization ---
 export function initMobileCapture() {
   // The "Get Photos from Mobile" button now directly opens the IP dialog
-  uiElements.mobilePhotoBtn.addEventListener("click", showMobileIpDialog);
+  uiElements.mobilePhotoBtn.addEventListener("click", handleConnectAndFetch);
+  uiElements.imageUploadSettings.addEventListener("click", showMobileIpDialog);
 
   // Dialog buttons
   uiElements.closeServerIpDialogBtn.addEventListener(
     "click",
     hideMobileIpDialog
   );
-  uiElements.connectServerIpBtn.addEventListener(
-    "click",
-    handleConnectAndFetch
-  ); // Connect triggers fetch
+  uiElements.connectServerIpBtn.addEventListener("click", addIpToMemory); // Connect triggers fetch
 
   // Close dialog when clicking outside
   uiElements.mobileIpDialog.addEventListener("click", (event) => {
@@ -212,4 +220,11 @@ export function stopMobileSession() {
   uiElements.mobileStatus.textContent = "Ready to fetch photos.";
   uiElements.mobileStatus.style.color = "#6c757d";
   updateMobileUI(false);
+}
+
+export async function addIpToMemory() {
+  let ipAddress = uiElements.serverIpInput.value.trim();
+
+  await setStoredServerUrl(ipAddress); // Persist the chosen IP
+  await addRecentServerIP(ipAddress);
 }

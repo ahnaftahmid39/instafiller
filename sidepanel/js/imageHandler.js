@@ -1,6 +1,7 @@
 // js/imageHandler.js
 import { uiElements, updateButtonStates } from "./ui.js";
 import { getExtensionEnabled, getSessionId, hasOcrData } from "./session.js";
+import { processImages } from "./ocrProcessor.js";
 
 let selectedImages = [];
 
@@ -25,6 +26,7 @@ export async function clearSelectedImages() {
 export async function addImage(imageData) {
   selectedImages.push(imageData);
   updateImageThumbnails();
+  processImages();
   updateButtonStates(
     true,
     getExtensionEnabled(),
@@ -43,7 +45,7 @@ export async function removeSelectedImage(imageId) {
 }
 
 export function updateImageThumbnails() {
-  uiElements.imageThumbnails.innerHTML = "";
+  // uiElements.imageThumbnails.innerHTML = "";
   selectedImages.forEach((image) => {
     const container = document.createElement("div");
     container.className = "image-container";
@@ -93,7 +95,7 @@ export function updateImageThumbnails() {
       container.classList.add("mobile-image");
     }
 
-    uiElements.imageThumbnails.appendChild(container);
+    // uiElements.imageThumbnails.appendChild(container);
   });
 }
 

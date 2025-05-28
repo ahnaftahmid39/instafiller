@@ -2,7 +2,7 @@
 export const uiElements = {
   imageInput: document.getElementById("image-input"),
   imageThumbnails: document.getElementById("image-thumbnails"),
-  processImagesBtn: document.getElementById("process-images-btn"),
+  // processImagesBtn: document.getElementById("process-images-btn"),
   fillFormBtn: document.getElementById("fill-form-btn"),
   newSessionBtn: document.getElementById("new-session-btn"),
   responseContainer: document.getElementById("response-container"),
@@ -31,6 +31,7 @@ export const uiElements = {
   connectServerIpBtn: document.getElementById("connect-server-ip-btn"),
   serverIpInput: document.getElementById("server-ip-input"),
   savedServerIpsList: document.getElementById("saved-server-ips-list"),
+  imageUploadSettings: document.querySelector("#mobile-setting-button"),
 };
 
 // Add this function at the beginning of the file
@@ -39,7 +40,7 @@ export function initializeUIElements() {
   const requiredElements = [
     "image-input",
     "image-thumbnails",
-    "process-images-btn",
+    // "process-images-btn",
     "fill-form-btn",
     "new-session-btn",
     "response-container",
@@ -216,30 +217,39 @@ export async function updateOcrDataDisplay(sessionId) {
       uiElements.ocrDataDisplay.innerHTML = "";
       sessionData.forEach((item, index) => {
         const div = document.createElement("div");
-        div.className = "ocr-data-item";
-
-        const header = document.createElement("div");
-        header.className = "ocr-item-header";
-
-        const title = document.createElement("div");
-        title.className = "ocr-item-title";
-        const isMobile = item.filename.startsWith("mobile_");
-        title.textContent = `${isMobile ? "📱" : "💻"} Image ${index + 1}: ${
+        const deviceIcon = item.filename.startsWith("mobile_") ? "📱" : "💻";
+        const titleText = `<strong> Image ${index + 1}: </strong> ${
           item.filename
         }`;
-
-        const removeBtn = document.createElement("button");
-        removeBtn.className = "btn-danger";
-        removeBtn.innerHTML = `
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 6h18"></path>
-            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-            <path d="M8 6V4c0-1 1-2 2-2h4c0 1 1 2 2 2v2"></path>
-            <line x1="10" y1="11" x2="10" y2="17"></line>
-            <line x1="14" y1="11" x2="14" y2="17"></line>
-          </svg>
-          Delete
+        div.className = "ocr-data-item";
+        div.innerHTML = `
+            <div class="main-icon">${deviceIcon}</div>
+            <div class="content-wrapper">
+              <div class="ocr-item-header">
+                <div class="ocr-item-title">${titleText}</div>
+              </div>
+              <div class="ocr-item-details">
+                <strong>Fields extracted:</strong> 
+                ${Object.keys(item.mappedData).length}                
+              </div>
+              <div class="ocr-item-details">
+                <strong>Processed:</strong> 
+                ${new Date(item.timestamp).toLocaleString()}             
+              </div>
+            </div>
+            <button class="btn-danger ocr-data-delete-button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c0 1 1 2 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg> 
+            </button>
         `;
+
+        const removeBtn = div.querySelector(".btn-danger");
+
         removeBtn.onclick = () => {
           const event = new CustomEvent("removeOcrItem", {
             detail: item.imageId,
@@ -247,23 +257,54 @@ export async function updateOcrDataDisplay(sessionId) {
           document.dispatchEvent(event);
         };
 
-        header.appendChild(title);
-        header.appendChild(removeBtn);
-
-        const details = document.createElement("div");
-        details.className = "ocr-item-details";
-        details.innerHTML = `
-          <strong>Fields extracted:</strong> ${
-            Object.keys(item.mappedData).length
-          }<br>
-          <strong>Processed:</strong> ${new Date(
-            item.timestamp
-          ).toLocaleString()}
-        `;
-
-        div.appendChild(header);
-        div.appendChild(details);
         uiElements.ocrDataDisplay.appendChild(div);
+
+        // const header = document.createElement("div");
+        // header.className = "ocr-item-header";
+
+        // const title = document.createElement("div");
+        // title.className = "ocr-item-title";
+        // // const isMobile = item.filename.startsWith("mobile_");
+        // // title.textContent = `${isMobile ? "📱" : "💻"} Image ${index + 1}: ${
+        // //   item.filename
+        // // }`;
+
+        // const removeBtn = document.createElement("button");
+        // removeBtn.className = "btn-danger";
+        // removeBtn.innerHTML = `
+        //   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        //     <path d="M3 6h18"></path>
+        //     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+        //     <path d="M8 6V4c0-1 1-2 2-2h4c0 1 1 2 2 2v2"></path>
+        //     <line x1="10" y1="11" x2="10" y2="17"></line>
+        //     <line x1="14" y1="11" x2="14" y2="17"></line>
+        //   </svg>
+        //   Delete
+        // `;
+        // removeBtn.onclick = () => {
+        //   const event = new CustomEvent("removeOcrItem", {
+        //     detail: item.imageId,
+        //   });
+        //   document.dispatchEvent(event);
+        // };
+
+        // header.appendChild(title);
+        // header.appendChild(removeBtn);
+
+        // const details = document.createElement("div");
+        // details.className = "ocr-item-details";
+        // details.innerHTML = `
+        //   <strong>Fields extracted:</strong> ${
+        //     Object.keys(item.mappedData).length
+        //   }<br>
+        //   <strong>Processed:</strong> ${new Date(
+        //     item.timestamp
+        //   ).toLocaleString()}
+        // `;
+
+        // div.appendChild(header);
+        // div.appendChild(details);
+        // uiElements.ocrDataDisplay.appendChild(div);
       });
     }
     await updateTotalSessionsInfo();
@@ -292,11 +333,11 @@ export async function updateTotalSessionsInfo() {
 }
 
 export function updateButtonStates(hasImages, extensionEnabled, hasOcrData) {
-  if (!uiElements.processImagesBtn || !uiElements.fillFormBtn) {
+  if (!uiElements.fillFormBtn) {
     console.warn("Button elements not found");
     return;
   }
-  uiElements.processImagesBtn.disabled = !hasImages || !extensionEnabled;
+  // uiElements.processImagesBtn.disabled = !hasImages || !extensionEnabled;
   uiElements.fillFormBtn.disabled = !hasOcrData || !extensionEnabled;
   if (uiElements.detectFieldsBtn) {
     uiElements.detectFieldsBtn.disabled = !extensionEnabled;
@@ -305,18 +346,18 @@ export function updateButtonStates(hasImages, extensionEnabled, hasOcrData) {
 
 export function updateMobileUI(isConnected) {
   if (isConnected) {
-    uiElements.mobilePhotoBtn.style.display = "none";
+    // uiElements.mobilePhotoBtn.style.display = "none";
     // uiElements.stopMobileBtn.style.display = 'inline-block'; // No longer needed
     // uiElements.mobileSessionInfo.style.display = 'block'; // No longer needed
-    uiElements.mobileStatus.style.display = "block"; // Show status
+    // uiElements.mobileStatus.style.display = "block"; // Show status
   } else {
-    uiElements.mobilePhotoBtn.style.display = "inline-block";
+    // uiElements.mobilePhotoBtn.style.display = "inline-block";
     // uiElements.stopMobileBtn.style.display = 'none'; // No longer needed
     // uiElements.mobileSessionInfo.style.display = 'none'; // No longer needed
-    uiElements.mobileStatus.style.display = "block"; // Still show status, but reset text
-    uiElements.mobileStatus.textContent = "Ready to fetch photos from mobile.";
-    uiElements.mobileStatus.style.color = "#6c757d";
-    uiElements.mobilePhotos.innerHTML = ""; // Clear displayed photo
+    // uiElements.mobileStatus.style.display = "block"; // Still show status, but reset text
+    // uiElements.mobileStatus.textContent = "Ready to fetch photos from mobile.";
+    // uiElements.mobileStatus.style.color = "#6c757d";
+    // uiElements.mobilePhotos.innerHTML = ""; // Clear displayed photo
   }
 }
 
@@ -326,7 +367,7 @@ export function updateImageThumbnails(images = [], onRemove = null) {
     return;
   }
 
-  uiElements.imageThumbnails.innerHTML = ""; // Clear existing thumbnails
+  // uiElements.imageThumbnails.innerHTML = ""; // Clear existing thumbnails
 
   if (images.length === 0) {
     return; // No images to display

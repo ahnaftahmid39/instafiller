@@ -65,22 +65,22 @@ export async function initializeSession() {
       await updateOcrDataDisplay(currentSessionId);
     }
 
-    const hasImages = getCurrentImagesCount();
-    if (document.getElementById("process-images-btn")) {
-      updateButtonStates(
-        hasImages,
-        extensionEnabled,
-        await hasOcrData(currentSessionId)
-      );
-    }
+    // const hasImages = getCurrentImagesCount();
+    // if (document.getElementById("process-images-btn")) {
+    //   updateButtonStates(
+    //     hasImages,
+    //     extensionEnabled,
+    //     await hasOcrData(currentSessionId)
+    //   );
+    // }
 
     if (document.getElementById("response-container")) {
-      showMessage("Extension loaded successfully", "#059669");
+      showMessage("Extension loaded successfully", "#000");
     }
   } catch (error) {
     console.error("Error initializing session:", error);
     if (document.getElementById("response-container")) {
-      showMessage("Error initializing extension", "#ef4444");
+      showMessage("Error initializing extension", "#000");
     }
   }
 }
@@ -108,10 +108,10 @@ export async function newSession() {
     await updateOcrDataDisplay(currentSessionId);
     // After clearing, there should be no images
     updateButtonStates(false, extensionEnabled, false);
-    showMessage("New session started - all data cleared!", "#059669");
+    showMessage("New session started - all data cleared!", "#000");
   } catch (error) {
     console.error("Error starting new session:", error);
-    showMessage("Error starting new session", "#ef4444");
+    showMessage("Error starting new session", "#000");
   }
 }
 
@@ -129,7 +129,7 @@ export async function toggleExtension(checked) {
   );
   showMessage(
     extensionEnabled ? "Extension enabled" : "Extension disabled",
-    extensionEnabled ? "#059669" : "#ef4444"
+    extensionEnabled ? "#000" : "#000"
   );
 }
 
@@ -154,10 +154,10 @@ export async function removeOcrDataItem(imageId) {
       extensionEnabled,
       await hasOcrData(currentSessionId)
     );
-    showMessage("OCR data item removed", "#d97706");
+    showMessage("OCR data item removed", "#000");
   } catch (error) {
     console.error("Error removing OCR data item:", error);
-    showMessage("Error removing data", "#ef4444");
+    showMessage("Error removing data", "#000");
   }
 }
 

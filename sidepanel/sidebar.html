@@ -48,22 +48,26 @@
               <span class="section-icon">📷</span>
               Image Upload
             </div>
+            <button class="mobile-setting-button" id="mobile-setting-button">
+              ⚙
+            </button>
           </div>
           <div class="upload-content">
-            <div class="tab-buttons">
+            <!-- <div class="tab-buttons">
               <button class="tab-btn active" id="computer-option">
                 💻 Computer
               </button>
               <button class="tab-btn" id="mobile-option">📱 Mobile</button>
-            </div>
+            </div> -->
 
             <div class="tab-content-container">
               <div id="computer-upload" class="tab-content active">
-                <div class="upload-area" id="file-upload-area">
-                  <div class="upload-icon">📄</div>
+                <button class="upload-area" id="file-upload-area">
+                  <span class="btn-icon">💻</span> Get Photos from desktop
+                  <!-- <div class="upload-icon">📄</div>
                   <div class="upload-text">Click or drag images here</div>
-                  <div class="upload-subtext">PNG, JPG, JPEG supported</div>
-                </div>
+                  <div class="upload-subtext">PNG, JPG, JPEG supported</div> -->
+                </button>
                 <input
                   type="file"
                   id="image-input"
@@ -79,17 +83,17 @@
     Get Photos from Mobile
   </button>
 
-  <div class="mobile-session-status-display">
-    <div id="mobile-status" class="mobile-status">Ready to fetch photos from mobile.</div>
-    </div>
+  <!-- <div class="mobile-session-status-display"> -->
+    <!-- <div id="mobile-status" class="mobile-status">Ready to fetch photos from mobile.</div> -->
+    <!-- </div> -->
 </div>
             </div>
 
-            <div id="image-thumbnails" class="image-grid"></div>
-            <button id="process-images-btn" class="btn btn-primary" disabled>
+            <!-- <div id="image-thumbnails" class="image-grid"></div> -->
+            <!-- <button id="process-images-btn" class="btn btn-primary" disabled>
               <span>🔍</span>
               Process Images (OCR)
-            </button>
+            </button> -->
           </div>
         </div>
 
@@ -142,7 +146,7 @@
           <input type="text" id="server-ip-input" placeholder="e.g., http://192.168.1.100:3000" />
         </div>
 
-        <button id="connect-server-ip-btn" class="btn btn-primary dialog-btn">Connect</button>
+        <button id="connect-server-ip-btn" class="btn btn-primary dialog-btn">Add Ip</button>
 
         <div class="saved-ips-section">
           <h3>Saved Server IPs:</h3>

@@ -14,7 +14,8 @@ import { uiElements, updateButtonStates, updateMobileUI } from "./ui.js";
 // Only import what's needed from mobileCapture now
 import {
   initMobileCapture,
-  stopMobileSession
+  stopMobileSession,
+  initializeIPAddress,
 } from "./mobileCapture.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -41,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     toggleExtension(event.target.checked);
   });
 
-  uiElements.processImagesBtn.addEventListener("click", processImages);
+  // uiElements.processImagesBtn.addEventListener("click", processImages);
 
   uiElements.fillFormBtn.addEventListener("click", fillForm);
 
@@ -64,22 +65,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
   // Upload option switching
-  uiElements.computerOption.addEventListener("click", () => {
-    uiElements.computerOption.classList.add("active");
-    uiElements.mobileOption.classList.remove("active");
-    uiElements.computerUpload.style.display = "block";
-    uiElements.mobileUpload.style.display = "none";
-    // No explicit stopMobileSession needed here anymore as there's no ongoing session
-    updateMobileUI(false); // Ensure mobile UI elements are reset
-  });
+  // uiElements.computerOption.addEventListener("click", () => {
+  //   uiElements.computerOption.classList.add("active");
+  //   uiElements.mobileOption.classList.remove("active");
+  //   uiElements.computerUpload.style.display = "block";
+  //   uiElements.mobileUpload.style.display = "none";
+  //   // No explicit stopMobileSession needed here anymore as there's no ongoing session
+  //   updateMobileUI(false); // Ensure mobile UI elements are reset
+  // });
 
-  uiElements.mobileOption.addEventListener("click", () => {
-    uiElements.mobileOption.classList.add("active");
-    uiElements.computerOption.classList.remove("active");
-    uiElements.computerUpload.style.display = "none";
-    uiElements.mobileUpload.style.display = "block";
-    updateMobileUI(false); // Initialize mobile UI to its default state
-  });
+  // uiElements.mobileOption.addEventListener("click", () => {
+  //   uiElements.mobileOption.classList.add("active");
+  //   uiElements.computerOption.classList.remove("active");
+  //   uiElements.computerUpload.style.display = "none";
+  //   uiElements.mobileUpload.style.display = "block";
+  //   updateMobileUI(false); // Initialize mobile UI to its default state
+  // });
 
   // Update button states initially and when images are selected/deselected
   setTimeout(async () => {
@@ -92,6 +93,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Initialize the mobile UI state on DOMContentLoaded
   updateMobileUI(false);
+
+  initializeIPAddress();
 
   // Cleanup on page unload (stopMobileSession can be an empty stub or removed)
   window.addEventListener("beforeunload", () => {

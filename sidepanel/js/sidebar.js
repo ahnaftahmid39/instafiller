@@ -43,8 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   uiElements.clearFormBtn.addEventListener("click", clearForm);
 
-  uiElements.newSessionBtn.addEventListener("click", newSession);
-
   // Form detection event listeners
   uiElements.detectFieldsBtn?.addEventListener("click", detectFormFields);
 

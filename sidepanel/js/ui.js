@@ -360,6 +360,9 @@ function getFieldIcon(fieldType) {
 }
 
 export async function updateTotalSessionsInfo() {
+  if (!uiElements.totalSessionsInfo) {
+    return; // Element no longer exists, skip update
+  }
   try {
     const result = await window.chrome.storage.session.get(["ocrDataStore"]);
     const ocrDataStore = result.ocrDataStore || {};

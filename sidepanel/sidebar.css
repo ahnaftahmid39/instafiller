@@ -1179,7 +1179,8 @@ div#mobile-ip-dialog {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 70%;
+  width: 100%;
+  justify-content: center;
 }
 
 .dialog-content h2 {
@@ -1197,6 +1198,7 @@ div#mobile-ip-dialog {
 .dialog-content .input-group {
   margin-bottom: 15px;
   text-align: left;
+  width: 90%;
 }
 
 .dialog-content label {
@@ -1207,13 +1209,29 @@ div#mobile-ip-dialog {
 }
 
 .dialog-content input[type="text"] {
-  width: calc(100% - 20px); /* Adjust for padding */
+  width: calc(100% - 20px);
   padding: 10px;
   border: 1px solid var(--border-color);
   border-radius: 5px;
   font-size: 1em;
   background-color: var(--input-bg-color);
   color: var(--text-color-primary);
+  border: 1px solid violet;
+  box-shadow: inset -1px -1px 4px 0px #7a66a1;
+}
+
+button#connect-server-ip-btn {
+  width: fit-content;
+  margin: unset;
+  height: 40px;
+  white-space: nowrap;
+}
+
+.ip-address-input-wraper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: space-between;
 }
 
 .dialog-content .dialog-btn {
@@ -1222,11 +1240,12 @@ div#mobile-ip-dialog {
 }
 
 .saved-ips-section {
-  margin-top: 25px;
+  margin-top: 8px;
   text-align: left;
-  max-height: 150px; /* Limit height for scrollability */
-  overflow-y: auto; /* Enable scrolling if too many IPs */
-  padding-right: 5px; /* Prevent scrollbar from obscuring text */
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 5px;
+  width: 89%;
 }
 
 .saved-ips-section h3 {
@@ -1239,15 +1258,20 @@ div#mobile-ip-dialog {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .saved-ips-list li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 8px;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-color-secondary);
+  border: 1px solid violet;
+  cursor: pointer;
 }
 
 .saved-ips-list li:last-child {

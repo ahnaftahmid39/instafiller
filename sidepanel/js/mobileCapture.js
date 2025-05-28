@@ -58,9 +58,13 @@ function renderSavedServerIPs() {
     } else {
       ips.forEach((ip) => {
         const li = document.createElement("li");
-        li.textContent = ip;
+        // li.textContent = ip;
         li.classList.add("saved-ip-item");
-        li.addEventListener("click", () => {
+        li.innerHTML = `<span class="saved-ip-item-text">${ip}</span><span class="saved-ip-item-delete">❌</span>`;
+        li.addEventListener("click", (e) => {
+          if (e.target.closest(".saved-ip-item-delete")) {
+            return;
+          }
           uiElements.serverIpInput.value = ip;
         });
         uiElements.savedServerIpsList.appendChild(li);

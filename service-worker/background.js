@@ -31,77 +31,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       handleSingleImageProcessing(request, sendResponse);
       return true;
 
-    case "fetchPhoto": // <-- ADD THE fetchPhoto CASE HERE
-      const urlToFetch = request.serverUrl;
-
-      if (!urlToFetch) {
-        sendResponse({ success: false, error: "Server URL not provided." });
-        return true; // Indicate async response
-      }
-
-      fetch(urlToFetch)
-        .then((response) => {
-          console.log("Fetch response from mobile server:", response);
-
-          if (!response.ok) {
-            throw new Error(
-              `HTTP error! Status: ${response.status} - ${
-                response.statusText || "Unknown Error"
-              }`
-            );
-          }
-
-          const contentType = response.headers.get("content-type");
-          if (!contentType || !contentType.startsWith("image/")) {
-            throw new Error(
-              `Expected image, but received ${
-                contentType || "no content type"
-              }.`
-            );
-          }
-          return response.blob();
-        })
-        .then((blob) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            chrome.storage.local
-              .set({ lastMobilePhoto: reader.result })
-              .then(() => {
-                console.log("Mobile photo saved to storage.");
-                sendResponse({ success: true, dataUrl: reader.result });
-              })
-              .catch((error) => {
-                console.error("Error saving mobile photo to storage:", error);
-                sendResponse({
-                  success: false,
-                  error:
-                    "Failed to save photo to storage: " +
-                    (error.message || error),
-                });
-              });
-          };
-          reader.onerror = (error) => {
-            console.error("FileReader error:", error);
-            sendResponse({
-              success: false,
-              error:
-                "Failed to read photo data from blob: " +
-                (error.message || error),
-            });
-          };
-          reader.readAsDataURL(blob);
-        })
-        .catch((error) => {
-          console.error("Error fetching photo:", error);
-          sendResponse({
-            success: false,
-            error:
-              error.message ||
-              "Failed to fetch photo due to an unknown reason.",
-          });
-        });
-
-      return true; // Important: Indicate async response for 'fetchPhoto'
+    case "fetchPhoto":
+      handleFetchPhoto(request, sendResponse);
+      return true;
 
     default:
       console.warn(`Unknown action: ${request.action}`);
@@ -109,6 +41,68 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       return false; // No async response for unhandled actions
   }
 });
+
+
+// Refactored fetchPhoto handler
+function handleFetchPhoto(request, sendResponse) {
+  const urlToFetch = request.serverUrl;
+
+  if (!urlToFetch) {
+    sendResponse({ success: false, error: "Server URL not provided." });
+    return;
+  }
+
+  fetch(urlToFetch)
+    .then((response) => {
+      console.log("Fetch response from mobile server:", response);
+
+      if (!response.ok) {
+        throw new Error(
+          `HTTP error! Status: ${response.status} - ${response.statusText || "Unknown Error"}`
+        );
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.startsWith("image/")) {
+        throw new Error(`Expected image, but received ${contentType || "no content type"}.`);
+      }
+
+      return response.blob();
+    })
+    .then((blob) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        chrome.storage.local
+          .set({ lastMobilePhoto: reader.result })
+          .then(() => {
+            console.log("Mobile photo saved to storage.");
+            sendResponse({ success: true, dataUrl: reader.result });
+          })
+          .catch((error) => {
+            console.error("Error saving mobile photo to storage:", error);
+            sendResponse({
+              success: false,
+              error: "Failed to save photo to storage: " + (error.message || error),
+            });
+          });
+      };
+      reader.onerror = (error) => {
+        console.error("FileReader error:", error);
+        sendResponse({
+          success: false,
+          error: "Failed to read photo data from blob: " + (error.message || error),
+        });
+      };
+      reader.readAsDataURL(blob);
+    })
+    .catch((error) => {
+      console.error("Error fetching photo:", error);
+      sendResponse({
+        success: false,
+        error: error.message || "Failed to fetch photo due to an unknown reason.",
+      });
+    });
+}
 
 async function handleMultipleImageProcessing(request, sendResponse) {
   const { images, sessionId } = request;

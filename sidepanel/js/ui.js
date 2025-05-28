@@ -411,7 +411,9 @@ export function updateMobileUI(isConnected) {
     uiElements.mobileStatus.style.display = "block"; // Still show status, but reset text
     uiElements.mobileStatus.textContent = "Ready to fetch photos from mobile.";
     uiElements.mobileStatus.style.color = "#6c757d";
-    uiElements.mobilePhotos.innerHTML = ""; // Clear displayed photo
+    if (uiElements.mobilePhotos) {
+      uiElements.mobilePhotos.innerHTML = ""; // Clear displayed photo
+    }
   }
 }
 

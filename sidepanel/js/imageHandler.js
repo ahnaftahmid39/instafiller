@@ -32,6 +32,16 @@ export async function addImage(imageData) {
 export async function removeSelectedImage(imageId) {
   selectedImages = selectedImages.filter((img) => img.id !== imageId);
   updateImageThumbnails();
+
+
+    try {
+      await chrome.storage.local.remove("lastMobilePhoto");
+      console.log("Removed lastMobilePhoto from storage.");
+    } catch (error) {
+      console.warn("Failed to remove from storage:", error);
+    }
+  
+
   updateButtonStates(
     selectedImages.length > 0,
     getExtensionEnabled(),

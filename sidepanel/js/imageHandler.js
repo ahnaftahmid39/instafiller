@@ -48,27 +48,68 @@ export function updateImageThumbnails() {
     const container = document.createElement("div");
     container.className = "image-container";
 
+    // Create file type icon wrapper
+    const iconWrapper = document.createElement("div");
+    iconWrapper.className = "file-icon-wrapper";
+
+    // Add file type icon
+    const fileIcon = document.createElement("span");
+    fileIcon.className = "file-icon";
+    fileIcon.textContent = getFileIcon(image.mimeType);
+    iconWrapper.appendChild(fileIcon);
+
+    // Create name container
+    const nameContainer = document.createElement("div");
+    nameContainer.className = "name-container";
+
+    // Add file name
     const nameElement = document.createElement("div");
     nameElement.className = "image-name";
     nameElement.textContent = image.name;
-    nameElement.title = `${image.name} ${
-      image.fromMobile ? "(Mobile)" : "(Computer)"
-    }`;
 
-    const removeBtn = document.createElement("button"); // Changed to button
+    // Add source badge (Mobile/Computer)
+    const sourceBadge = document.createElement("span");
+    sourceBadge.className = `source-badge ${
+      image.fromMobile ? "mobile" : "computer"
+    }`;
+    sourceBadge.textContent = image.fromMobile ? "📱 Mobile" : "💻 Computer";
+
+    nameContainer.appendChild(nameElement);
+    nameContainer.appendChild(sourceBadge);
+
+    // Create remove button
+    const removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
     removeBtn.innerHTML = "×";
-    removeBtn.title = "Remove image"; // Added tooltip
+    removeBtn.title = "Remove image";
     removeBtn.onclick = () => removeSelectedImage(image.id);
 
+    // Assemble container
+    container.appendChild(iconWrapper);
+    container.appendChild(nameContainer);
+    container.appendChild(removeBtn);
+
     if (image.fromMobile) {
-      container.classList.add("mobile-image"); // Using classList instead of style
+      container.classList.add("mobile-image");
     }
 
-    container.appendChild(nameElement);
-    container.appendChild(removeBtn);
     uiElements.imageThumbnails.appendChild(container);
   });
+}
+
+// Helper function to determine file icon
+function getFileIcon(mimeType) {
+  switch (mimeType) {
+    case "image/jpeg":
+    case "image/jpg":
+      return "📸";
+    case "image/png":
+      return "🖼️";
+    case "image/gif":
+      return "🎯";
+    default:
+      return "📄";
+  }
 }
 
 // Event listener for image input

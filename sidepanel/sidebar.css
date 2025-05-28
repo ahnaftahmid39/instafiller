@@ -375,13 +375,13 @@
 
   /* Image Thumbnails */
   .image-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-    gap: 6px;
-    margin-bottom: 10px;
-    max-height: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+    max-height: 150px;
     overflow-y: auto;
-    flex-shrink: 0;
+    padding: 4px;
   }
 
   .image-item {
@@ -400,60 +400,105 @@
   .remove-btn {
     position: absolute;
     right: -4px;
-    top: 4px;
+    top: 3px;
     transform: translateY(-50%);
-    width: 11px;
-    height: 11px;
-    background: hsl(var(--destructive));
-    color: white;
+    width: 15px;
+    height: 15px;
+    background: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
     border: none;
     border-radius: 50%;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.7; /* Changed from 0 to 0.7 */
+    opacity: 0;
     transition: all 0.2s ease;
   }
 
   .image-container {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 8px 4px 4px;
+    gap: 12px;
+    padding: 8px 12px;
     background: hsl(var(--card));
     border: 1px solid hsl(var(--border));
     border-radius: var(--radius);
     position: relative;
     transition: all 0.2s ease;
-  }
-
-  .image-name {
-    flex: 1;
-    font-size: 11px;
-    color: hsl(var(--foreground));
-    padding: 4px 24px 4px 8px;
-    background: hsl(var(--muted) / 0.3);
-    border-radius: calc(var(--radius) - 2px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex;
-    align-items: center;
+    box-shadow: 0 2px 4px hsl(var(--muted) / 0.1);
   }
 
   .image-container:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px hsl(var(--muted) / 0.15);
     background: hsl(var(--muted) / 0.1);
   }
 
-  .remove-btn:hover {
+  .file-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: hsl(var(--primary) / 0.1);
+    border-radius: var(--radius);
+    flex-shrink: 0;
+  }
+
+  .file-icon {
+    font-size: 18px;
+  }
+
+  .name-container {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .image-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .source-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .source-badge.mobile {
+    background: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+  }
+
+  .source-badge.computer {
+    background: hsl(var(--muted) / 0.3);
+    color: hsl(var(--muted-foreground));
+  }
+
+  .image-container:hover .remove-btn {
     opacity: 1;
+  }
+
+  .remove-btn:hover {
+    background: hsl(var(--destructive));
+    color: white;
     transform: translateY(-50%) scale(1.1);
   }
 
   .mobile-image {
-    border-color: hsl(var(--primary)) !important;
+    border-left: 3px solid hsl(var(--primary));
   }
 
   /* OCR Data Section */

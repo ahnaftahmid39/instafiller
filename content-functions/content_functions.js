@@ -304,6 +304,10 @@ export function filterFieldsInForm() {
 
 export function fillFormValues(mappedData) {
   console.log("Filling form values with mapped data:", mappedData);
+  document.querySelectorAll(`.ui-selectonemenu span`).forEach((e) => {
+    e.click();
+    e.click();
+  });
   Object.entries(mappedData).forEach((data) => {
     const [name, value] = data;
     if (!name || value === undefined) {
@@ -389,6 +393,29 @@ export function fillFormValues(mappedData) {
             option.selected = true;
             element.dispatchEvent(new Event("input", { bubbles: true }));
             element.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+          console.log("------- Filling select element:  1");
+          if (element.id.includes("f_main:sel")) {
+            console.log("------- Filling select element:   2");
+            const selectElm =
+              [...element.options].find(
+                (opt) =>
+                  opt.textContent.trim().toLowerCase().replaceAll(" ", "") ===
+                  value.toLowerCase()
+              ) ||
+              [...element.options].find(
+                (opt) => opt.value.toLowerCase() === value.toLowerCase()
+              );
+
+            console.log("------- Filling select element:   3");
+            if (selectElm) {
+              console.log(selectElm, "selectElm");
+              console.log("------- Filling select element:   4");
+              document
+                .querySelector(`[data-label="${selectElm.textContent.trim()}"]`)
+                .click();
+              // document.querySelector(`[id="${selectElm.getAttribute("aria-activedescendant")}"]`).click();
+            }
           }
           break;
 

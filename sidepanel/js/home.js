@@ -211,20 +211,27 @@ function goToMainPage() {
 }
 
 function showMessage(message, type = "info") {
-  statusContainer.style.display = "block";
-  statusContainer.textContent = message;
-  statusContainer.className = `status ${type}`;
+  statusContainer.classList.add("visible");
+  const statusElement = statusContainer.querySelector(".status");
+  statusElement.textContent = message;
+  statusElement.className = `status ${type}`;
 
-  // Auto-hide success messages after 3 seconds
-  if (type === "success") {
-    setTimeout(() => {
+  // Remove any existing hide timeout
+  if (window.messageTimeout) {
+    clearTimeout(window.messageTimeout);
+  }
+
+  // Auto-hide messages after delay (3s for success, 5s for others)
+  const delay = type === "success" ? 3000 : 5000;
+  if (type !== "error") {
+    window.messageTimeout = setTimeout(() => {
       hideMessage();
-    }, 3000);
+    }, delay);
   }
 }
 
 function hideMessage() {
-  statusContainer.style.display = "none";
+  statusContainer.classList.remove("visible");
 }
 
 // Export functions for potential use by other modules

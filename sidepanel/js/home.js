@@ -90,10 +90,7 @@ async function saveApiKey() {
 
   try {
     showMessage("Saving API key...", "info");
-    saveKeyBtn.classList.add("loading");
-
-    // Store in localStorage
-    localStorage.setItem("gemini_api_key", apiKey);
+    saveKeyBtn.classList.add("loading")
 
     // Also store in chrome storage for background script access
     if (typeof chrome !== "undefined" && chrome.storage) {
@@ -183,13 +180,9 @@ async function testApiKey() {
 
 async function getStoredApiKey() {
   try {
-    // Try localStorage first
-    const localKey = localStorage.getItem("gemini_api_key");
-    if (localKey) return localKey;
-
     // Try chrome storage as fallback
     if (typeof chrome !== "undefined" && chrome.storage) {
-      const result = await chrome.storage.local.get(["gemini_api_key"]);
+      const result = await chrome.storage.local.get("gemini_api_key");
       return result.gemini_api_key || null;
     }
 

@@ -1,10 +1,7 @@
-const GEMINI_API_KEY = "AIzaSyDqkZDUaK1NjsaNy45PPvhQViw-cdbZcNg"; // Replace with your actual API key
-
-if (!GEMINI_API_KEY || GEMINI_API_KEY === "YOUR_GEMINI_API_KEY") {
-  console.error(
-    "Gemini API Key is not set in background.js! Please replace 'YOUR_GEMINI_API_KEY' with your actual key."
-  );
-}
+const getGeminiApiKey = async () => {
+  const result = await chrome.storage.local.get("gemini_api_key");
+  return result.gemini_api_key || null;
+};
 
 export async function performOcrWithGemini(base64Image, mimeType) {
   const contents = [
@@ -24,7 +21,8 @@ export async function performOcrWithGemini(base64Image, mimeType) {
   ];
 
   try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const gemini_api_key = await getGeminiApiKey()
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${gemini_api_key}`;
 
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -97,7 +95,9 @@ export async function callGeminiForMapping(prompt) {
   const contents = [{ role: "user", parts: [{ text: prompt }] }];
 
   try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const gemini_api_key = await getGeminiApiKey()
+
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${gemini_api_key}`;
 
     const response = await fetch(apiUrl, {
       method: "POST",

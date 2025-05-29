@@ -703,7 +703,7 @@ button.mobile-setting-button {
   z-index: 1000;
   pointer-events: none;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   min-height: 50px;
   visibility: hidden;
 }

@@ -118,8 +118,9 @@ export async function newSession() {
 export async function toggleExtension(checked) {
   extensionEnabled = checked;
   await window.chrome.storage.session.set({ extensionEnabled });
-  updateExtensionStatus(extensionEnabled);
-
+    if (document.getElementById("extension-status")) {
+      updateExtensionStatus(extensionEnabled);
+    }
   // Check current images count when toggling
   const hasImages = getCurrentImagesCount();
   updateButtonStates(

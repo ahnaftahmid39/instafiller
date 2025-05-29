@@ -298,6 +298,12 @@ button.mobile-setting-button {
   font-size: 18px;
   margin-right: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-setting-button.active {
+  transform: rotate(180deg);
+  color: hsl(var(--primary));
 }
 
 .upload-content {

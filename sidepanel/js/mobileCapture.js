@@ -30,11 +30,12 @@ async function addRecentServerIP(ip) {
 }
 
 // --- UI Dialog Functions ---
+let isDialogOpen = false;
+
 export async function showMobileIpDialog() {
   uiElements.mobileIpDialog.style.display = "flex";
-  // currentServerUrl = await getStoredServerUrl();
-  // uiElements.serverIpInput.value = currentServerUrl;
-  // renderSavedServerIPs();
+  isDialogOpen = true;
+  await initializeIPAddress();
 }
 
 export async function initializeIPAddress() {
@@ -45,6 +46,7 @@ export async function initializeIPAddress() {
 
 export function hideMobileIpDialog() {
   uiElements.mobileIpDialog.style.display = "none";
+  isDialogOpen = false;
 }
 
 function renderSavedServerIPs() {
@@ -191,18 +193,34 @@ async function handleConnectAndFetch() {
   }
 }
 
+function toggleMobileIpDialog() {
+  const dialog = uiElements.mobileIpDialog;
+  const isVisible = dialog.style.display === "flex";
+
+  if (isVisible) {
+    hideMobileIpDialog();
+  } else {
+    showMobileIpDialog();
+  }
+}
+
 // --- Initialization ---
 export function initMobileCapture() {
-  // The "Get Photos from Mobile" button now directly opens the IP dialog
+  // Update event listener to use toggle function
+  uiElements.imageUploadSettings.addEventListener(
+    "click",
+    toggleMobileIpDialog
+  );
+
+  // Get Photos from Mobile button
   uiElements.mobilePhotoBtn.addEventListener("click", handleConnectAndFetch);
-  uiElements.imageUploadSettings.addEventListener("click", showMobileIpDialog);
 
   // Dialog buttons
   uiElements.closeServerIpDialogBtn.addEventListener(
     "click",
     hideMobileIpDialog
   );
-  uiElements.connectServerIpBtn.addEventListener("click", addIpToMemory); // Connect triggers fetch
+  uiElements.connectServerIpBtn.addEventListener("click", addIpToMemory);
 
   // Close dialog when clicking outside
   uiElements.mobileIpDialog.addEventListener("click", (event) => {
@@ -211,7 +229,7 @@ export function initMobileCapture() {
     }
   });
 
-  // Initial load of recent IPs when module initializes
+  // Initial load of recent IPs
   renderSavedServerIPs();
 }
 

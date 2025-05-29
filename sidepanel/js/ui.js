@@ -156,41 +156,59 @@ export function showProgress(show, text = "Processing...") {
   }
 }
 
-export function showMessage(message, color, type = "info") {
-  if (!uiElements.responseContainer) {
-    console.warn("Response container not found");
+export function showMessage(message, type = "processing") {
+  const statusContainer = document.getElementById("response-container");
+  const statusElement = statusContainer.querySelector(".status");
+
+  if (!statusContainer || !statusElement) {
+    console.warn("Status elements not found");
     return;
   }
-  // Show the status container
-  uiElements.responseContainer.style.display = "block";
-  uiElements.responseContainer.textContent = message;
-  uiElements.responseContainer.style.color = color;
-  uiElements.responseContainer.style.borderLeftColor = color;
 
-  // Remove existing status classes
-  uiElements.responseContainer.classList.remove(
-    "success",
-    "error",
-    "warning",
-    "info"
-  );
-
-  // Add appropriate status class based on color or type
-  if (color === "#059669" || type === "success") {
-    uiElements.responseContainer.classList.add("success");
-  } else if (color === "#ef4444" || type === "error") {
-    uiElements.responseContainer.classList.add("error");
-  } else if (color === "#d97706" || type === "warning") {
-    uiElements.responseContainer.classList.add("warning");
-  } else if (color === "#2563eb" || type === "info") {
-    uiElements.responseContainer.classList.add("info");
+  // Clear any existing timeouts
+  if (window.messageTimeout) {
+    clearTimeout(window.messageTimeout);
   }
 
-  // Auto-hide after 5 seconds for non-error messages
-  if (type !== "error" && color !== "#ef4444") {
-    setTimeout(() => {
-      uiElements.responseContainer.style.display = "none";
-    }, 5000);
+  // Force a reflow by accessing offsetHeight
+  statusElement.className = "status";
+  void statusElement.offsetHeight;
+
+  // Add new classes and show message
+  statusContainer.classList.add("visible");
+  statusElement.className = `status ${type}`;
+
+  // Add icons based on type
+  let icon = "";
+  switch (type) {
+    case "success":
+      icon = "✅ ";
+      break;
+    case "error":
+      icon = "❌ ";
+      break;
+    case "processing":
+      icon = "⏳ ";
+      break;
+    default:
+      icon = "ℹ️ ";
+  }
+
+  statusElement.textContent = icon + message;
+
+  // Auto-hide after delay (3s for success, 5s for others)
+  const delay = type === "success" ? 3000 : 5000;
+  if (type !== "error") {
+    window.messageTimeout = setTimeout(() => {
+      hideMessage();
+    }, delay);
+  }
+}
+
+function hideMessage() {
+  const statusContainer = document.getElementById("response-container");
+  if (statusContainer) {
+    statusContainer.classList.remove("visible");
   }
 }
 

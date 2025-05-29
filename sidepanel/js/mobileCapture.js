@@ -30,11 +30,12 @@ async function addRecentServerIP(ip) {
 }
 
 // --- UI Dialog Functions ---
+let isDialogOpen = false;
+
 export async function showMobileIpDialog() {
   uiElements.mobileIpDialog.style.display = "flex";
-  // currentServerUrl = await getStoredServerUrl();
-  // uiElements.serverIpInput.value = currentServerUrl;
-  // renderSavedServerIPs();
+  isDialogOpen = true;
+  await initializeIPAddress();
 }
 
 export async function initializeIPAddress() {
@@ -45,31 +46,58 @@ export async function initializeIPAddress() {
 
 export function hideMobileIpDialog() {
   uiElements.mobileIpDialog.style.display = "none";
+  isDialogOpen = false;
+}
+
+async function removeServerIP(ipToRemove) {
+  let recentIps = await getSavedServerIPs();
+  recentIps = recentIps.filter((ip) => ip !== ipToRemove);
+  await chrome.storage.local.set({ recentServerIps: recentIps });
+  renderSavedServerIPs();
+  showMessage("Server IP removed", "success");
 }
 
 function renderSavedServerIPs() {
   getSavedServerIPs().then((ips) => {
     uiElements.savedServerIpsList.innerHTML = "";
+
     if (ips.length === 0) {
       const emptyItem = document.createElement("li");
-      emptyItem.classList.add("empty-list-item");
-      emptyItem.textContent = "No saved IPs.";
+      emptyItem.classList.add("saved-ip-item");
+      emptyItem.textContent = "No saved IPs";
       uiElements.savedServerIpsList.appendChild(emptyItem);
-    } else {
-      ips.forEach((ip) => {
-        const li = document.createElement("li");
-        // li.textContent = ip;
-        li.classList.add("saved-ip-item");
-        li.innerHTML = `<span class="saved-ip-item-text">${ip}</span><span class="saved-ip-item-delete">❌</span>`;
-        li.addEventListener("click", (e) => {
-          if (e.target.closest(".saved-ip-item-delete")) {
-            return;
-          }
-          uiElements.serverIpInput.value = ip;
-        });
-        uiElements.savedServerIpsList.appendChild(li);
-      });
+      return;
     }
+
+    ips.forEach((ip) => {
+      const li = document.createElement("li");
+      li.classList.add("saved-ip-item");
+
+      const textSpan = document.createElement("span");
+      textSpan.classList.add("saved-ip-item-text");
+      textSpan.textContent = ip;
+      textSpan.title = "Click to use this IP";
+
+      const deleteBtn = document.createElement("span");
+      deleteBtn.classList.add("saved-ip-item-delete");
+      deleteBtn.textContent = "×";
+      deleteBtn.title = "Remove this IP";
+
+      li.appendChild(textSpan);
+      li.appendChild(deleteBtn);
+
+      // Click handlers
+      textSpan.addEventListener("click", () => {
+        uiElements.serverIpInput.value = ip;
+      });
+
+      deleteBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        removeServerIP(ip);
+      });
+
+      uiElements.savedServerIpsList.appendChild(li);
+    });
   });
 }
 
@@ -138,7 +166,14 @@ async function fetchPhotoFromMobile(serverIp) {
 async function handleConnectAndFetch() {
   let ipAddress = uiElements.serverIpInput.value.trim();
 
-  if (ipAddress) {
+  if (!ipAddress) {
+    showMessage("Please enter a server IP address", "error");
+    return;
+  }
+
+  try {
+    showMessage("Connecting to mobile device...", "processing");
+
     // 1. Ensure http:// protocol
     if (!ipAddress.startsWith("http://") && !ipAddress.startsWith("https://")) {
       ipAddress = `http://${ipAddress}`;
@@ -185,24 +220,47 @@ async function handleConnectAndFetch() {
 
     await fetchPhotoFromMobile(ipAddress); // Use the now correctly formatted IP with port
     hideMobileIpDialog();
+    showMessage("Successfully connected to mobile device!", "success");
+  } catch (error) {
+    showMessage(`Connection error: ${error.message}`, "error");
+  }
+}
+
+function toggleMobileIpDialog() {
+  const dialog = uiElements.mobileIpDialog;
+  const isVisible = dialog.style.display === "flex";
+
+  if (isVisible) {
+    hideMobileIpDialog();
   } else {
-    uiElements.mobileStatus.textContent = "Please enter a server IP address.";
-    uiElements.mobileStatus.style.color = "#dc3545";
+    showMobileIpDialog();
   }
 }
 
 // --- Initialization ---
 export function initMobileCapture() {
-  // The "Get Photos from Mobile" button now directly opens the IP dialog
+  // Update event listener to use toggle function
+  uiElements.imageUploadSettings.addEventListener(
+    "click",
+    toggleMobileIpDialog
+  );
+
+  // Get Photos from Mobile button
   uiElements.mobilePhotoBtn.addEventListener("click", handleConnectAndFetch);
-  uiElements.imageUploadSettings.addEventListener("click", showMobileIpDialog);
 
   // Dialog buttons
   uiElements.closeServerIpDialogBtn.addEventListener(
     "click",
     hideMobileIpDialog
   );
-  uiElements.connectServerIpBtn.addEventListener("click", addIpToMemory); // Connect triggers fetch
+  uiElements.connectServerIpBtn.addEventListener("click", addIpToMemory);
+
+  // Server IP input Enter key handling
+  uiElements.serverIpInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addIpToMemory();
+    }
+  });
 
   // Close dialog when clicking outside
   uiElements.mobileIpDialog.addEventListener("click", (event) => {
@@ -211,7 +269,7 @@ export function initMobileCapture() {
     }
   });
 
-  // Initial load of recent IPs when module initializes
+  // Initial load of recent IPs
   renderSavedServerIPs();
 }
 
@@ -225,6 +283,12 @@ export function stopMobileSession() {
 export async function addIpToMemory() {
   let ipAddress = uiElements.serverIpInput.value.trim();
 
-  await setStoredServerUrl(ipAddress); // Persist the chosen IP
+  if (!ipAddress) {
+    showMessage("Please enter a server IP address", "error");
+    return;
+  }
+
+  await setStoredServerUrl(ipAddress);
   await addRecentServerIP(ipAddress);
+  showMessage("IP address saved", "success");
 }

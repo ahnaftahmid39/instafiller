@@ -77,16 +77,24 @@
                 />
               </div>
 
-    <div id="mobile-upload" class="tab-content" style="display: block;">
-  <button id="mobile-photo-btn" class="btn btn-primary" style="display: inline-block;">
-    <span class="btn-icon">📱</span>
-    Get Photos from Mobile
-  </button>
+              <div
+                id="mobile-upload"
+                class="tab-content"
+                style="display: block"
+              >
+                <button
+                  id="mobile-photo-btn"
+                  class="btn btn-primary"
+                  style="display: inline-block"
+                >
+                  <span class="btn-icon">📱</span>
+                  Get Photos from Mobile
+                </button>
 
-  <!-- <div class="mobile-session-status-display"> -->
-    <!-- <div id="mobile-status" class="mobile-status">Ready to fetch photos from mobile.</div> -->
-    <!-- </div> -->
-</div>
+                <!-- <div class="mobile-session-status-display"> -->
+                <!-- <div id="mobile-status" class="mobile-status">Ready to fetch photos from mobile.</div> -->
+                <!-- </div> -->
+              </div>
             </div>
 
             <!-- <div id="image-thumbnails" class="image-grid"></div> -->
@@ -111,7 +119,6 @@
               <div class="empty-icon">📄</div>
               <div class="empty-text">No OCR data stored</div>
             </div>
-
           </div>
         </div>
 
@@ -132,11 +139,13 @@
         </div>
       </div>
 
-      <div id="response-container" class="status"></div>
-
+      <!-- Replace the old status container -->
+      <div id="response-container" class="status-container">
+        <div class="status"></div>
+      </div>
     </div>
 
-    <div id="mobile-ip-dialog" class="dialog-overlay" style="display: none;">
+    <div id="mobile-ip-dialog" class="dialog-overlay" style="display: none">
       <div class="dialog-content">
         <h2>🌐 Connect to Server</h2>
         <p>Enter the IP address of your backend server:</p>
@@ -144,19 +153,31 @@
         <div class="input-group">
           <label for="server-ip-input">Server IP Address:</label>
           <div class="ip-address-input-wraper">
-            <input type="text" id="server-ip-input" placeholder="e.g., http://192.168.1.100:3000" />
-            <button id="connect-server-ip-btn" class="btn btn-primary dialog-btn">Add Ip</button>
+            <input
+              type="text"
+              id="server-ip-input"
+              placeholder="e.g., http://192.168.1.100:3000"
+            />
+            <button
+              id="connect-server-ip-btn"
+              class="btn btn-primary dialog-btn"
+            >
+              Add Ip
+            </button>
           </div>
         </div>
 
-
         <div class="saved-ips-section">
           <h3>Saved Server IPs:</h3>
-          <ul id="saved-server-ips-list" class="saved-ips-list">
-            </ul>
+          <ul id="saved-server-ips-list" class="saved-ips-list"></ul>
         </div>
 
-        <button id="close-server-ip-dialog" class="btn btn-secondary dialog-btn">Close</button>
+        <button
+          id="close-server-ip-dialog"
+          class="btn btn-secondary dialog-btn"
+        >
+          Close
+        </button>
       </div>
     </div>
 

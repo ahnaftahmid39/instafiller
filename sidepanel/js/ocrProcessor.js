@@ -11,7 +11,7 @@ import {
 
 export async function processImages() {
   if (!getExtensionEnabled()) {
-    showMessage("Extension is disabled", "#000");
+    showMessage("Extension is disabled", "error");
     return;
   }
 
@@ -23,7 +23,7 @@ export async function processImages() {
 
   showProgress(true);
   // uiElements.processImagesBtn.disabled = true;
-  showMessage("Processing images...", "#000");
+  showMessage("Processing images...", "processing");
 
   try {
     console.log(
@@ -64,8 +64,9 @@ export async function processImages() {
         getExtensionEnabled(),
         await hasOcrData(getSessionId())
       );
+      showMessage("Images processed successfully!", "success");
     } else {
-      showMessage(`Error: ${response?.message || "Unknown error"}`, "#000");
+      showMessage(`Error: ${response?.message || "Unknown error"}`, "error");
       // Keep current images state on error
       const hasImages = getSelectedImages().length > 0;
       updateButtonStates(
@@ -76,7 +77,7 @@ export async function processImages() {
     }
   } catch (error) {
     console.error("Error processing images:", error);
-    showMessage(`Error: ${error.message}`, "#000");
+    showMessage(`Error: ${error.message}`, "error");
     // Keep current images state on error
     const hasImages = getSelectedImages().length > 0;
     updateButtonStates(

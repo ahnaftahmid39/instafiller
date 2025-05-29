@@ -75,12 +75,12 @@ export async function initializeSession() {
     // }
 
     if (document.getElementById("response-container")) {
-      showMessage("Extension loaded successfully", "#000");
+      showMessage("Extension loaded successfully", "success"); // Changed type to "success"
     }
   } catch (error) {
     console.error("Error initializing session:", error);
     if (document.getElementById("response-container")) {
-      showMessage("Error initializing extension", "#000");
+      showMessage("Error initializing extension", "error");
     }
   }
 }

@@ -694,6 +694,66 @@ button.mobile-setting-button {
   color: hsl(var(--destructive));
 }
 
+/* Status Container Styles */
+.status-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 1000;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  min-height: 50px;
+  visibility: hidden;
+}
+
+.status-container.visible {
+  visibility: visible;
+}
+
+.status {
+  max-width: 90%;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  border: 1px solid;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.status-container.visible .status {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.status.processing {
+  background: hsl(var(--primary) / 0.1);
+  border-color: hsl(var(--primary) / 0.3);
+  color: hsl(var(--primary));
+}
+
+.status.success {
+  background: hsl(var(--success) / 0.1);
+  border-color: hsl(var(--success) / 0.3);
+  color: hsl(var(--success));
+}
+
+.status.error {
+  background: hsl(var(--destructive) / 0.1);
+  border-color: hsl(var(--destructive) / 0.3);
+  color: hsl(var(--destructive));
+}
+
 /* Progress Bar */
 .progress-container {
   position: fixed;

@@ -10,13 +10,13 @@ import {
 
 export async function fillForm() {
   if (!getExtensionEnabled()) {
-    showMessage("Extension is disabled", "#000");
+    showMessage("Extension is disabled", "error");
     return;
   }
 
   showProgress(true, "Filling form...");
   uiElements.fillFormBtn.disabled = true;
-  showMessage("Filling form...", "#000");
+  showMessage("Filling form...", "processing"); // Changed type
 
   try {
     const [tab] = await window.chrome.tabs.query({
@@ -45,13 +45,13 @@ export async function fillForm() {
     });
 
     if (response && response.status === "success") {
-      showMessage("Form filled successfully with stored OCR data!", "#000");
+      showMessage("Form filled successfully with stored OCR data!", "success");
     } else {
-      showMessage(`Error: ${response?.message || "Unknown error"}`, "#000");
+      showMessage(`Error: ${response?.message || "Unknown error"}`, "error");
     }
   } catch (error) {
     console.error("Error filling form:", error);
-    showMessage(`Error: ${error.message}`, "#000");
+    showMessage(`Error: ${error.message}`, "error");
   } finally {
     showProgress(false);
     // Preserve current images state when updating button states

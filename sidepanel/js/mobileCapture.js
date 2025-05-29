@@ -140,7 +140,14 @@ async function fetchPhotoFromMobile(serverIp) {
 async function handleConnectAndFetch() {
   let ipAddress = uiElements.serverIpInput.value.trim();
 
-  if (ipAddress) {
+  if (!ipAddress) {
+    showMessage("Please enter a server IP address", "error");
+    return;
+  }
+
+  try {
+    showMessage("Connecting to mobile device...", "processing");
+
     // 1. Ensure http:// protocol
     if (!ipAddress.startsWith("http://") && !ipAddress.startsWith("https://")) {
       ipAddress = `http://${ipAddress}`;
@@ -187,9 +194,9 @@ async function handleConnectAndFetch() {
 
     await fetchPhotoFromMobile(ipAddress); // Use the now correctly formatted IP with port
     hideMobileIpDialog();
-  } else {
-    uiElements.mobileStatus.textContent = "Please enter a server IP address.";
-    uiElements.mobileStatus.style.color = "#dc3545";
+    showMessage("Successfully connected to mobile device!", "success");
+  } catch (error) {
+    showMessage(`Connection error: ${error.message}`, "error");
   }
 }
 

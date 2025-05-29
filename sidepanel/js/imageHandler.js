@@ -124,6 +124,24 @@ uiElements.imageInput.addEventListener("change", async (event) => {
     return;
   }
 
+  async function handleImageUpload(files) {
+    const validFiles = Array.from(files).filter((file) => {
+      const isValid = file.type.startsWith("image/");
+      if (!isValid) {
+        showMessage(`${file.name} is not a valid image file`, "error");
+      }
+      return isValid;
+    });
+
+    if (validFiles.length > 0) {
+      showMessage(
+        `${validFiles.length} image(s) added successfully`,
+        "success"
+      );
+      // ... rest of upload logic
+    }
+  }
+
   for (const file of files) {
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();

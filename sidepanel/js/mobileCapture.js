@@ -1,5 +1,5 @@
 // js/mobileCapture.js
-import { uiElements, updateMobileUI } from "./ui.js";
+import { uiElements, showMessage } from "./ui.js";
 import { addImage } from "./imageHandler.js"; // <-- CORRECTED: Import 'addImage' instead
 
 // Stores the currently used server URL, not a 'session' ID
@@ -271,13 +271,6 @@ export function initMobileCapture() {
 
   // Initial load of recent IPs
   renderSavedServerIPs();
-}
-
-export function stopMobileSession() {
-  console.log("stopMobileSession called (no active session concept).");
-  uiElements.mobileStatus.textContent = "Ready to fetch photos.";
-  uiElements.mobileStatus.style.color = "#6c757d";
-  updateMobileUI(false);
 }
 
 export async function addIpToMemory() {

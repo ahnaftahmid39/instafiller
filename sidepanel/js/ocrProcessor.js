@@ -2,7 +2,6 @@
 import { getSessionId, getExtensionEnabled, hasOcrData } from "./session.js";
 import { getSelectedImages, clearSelectedImages } from "./imageHandler.js";
 import {
-  uiElements,
   showProgress,
   showMessage,
   updateOcrDataDisplay,
@@ -88,53 +87,5 @@ export async function processImages() {
   } finally {
     showProgress(false);
     // uiElements.processImagesBtn.disabled = false;
-  }
-}
-
-export async function processNewMobilePhoto(imageData) {
-  try {
-    showProgress(true, "Processing mobile photo...");
-    showMessage("Processing photo from mobile...", "#000");
-
-    const response = await new Promise((resolve, reject) => {
-      window.chrome.runtime.sendMessage(
-        {
-          action: "processMultipleImages",
-          images: [imageData],
-          sessionId: getSessionId(),
-        },
-        (response) => {
-          if (window.chrome.runtime.lastError) {
-            reject(new Error(window.chrome.runtime.lastError.message));
-          } else {
-            resolve(response);
-          }
-        }
-      );
-    });
-
-    if (response && response.status === "success") {
-      await updateOcrDataDisplay(getSessionId());
-      // Check current images state after processing mobile photo
-      const hasImages = getSelectedImages().length > 0;
-      updateButtonStates(
-        hasImages,
-        getExtensionEnabled(),
-        await hasOcrData(getSessionId())
-      );
-      showMessage("Mobile photo processed successfully!", "#000");
-    } else {
-      showMessage(
-        `Error processing mobile photo: ${
-          response?.message || "Unknown error"
-        }`,
-        "#000"
-      );
-    }
-  } catch (error) {
-    console.error("Error processing mobile photo:", error);
-    showMessage(`Error processing mobile photo: ${error.message}`, "#000");
-  } finally {
-    showProgress(false);
   }
 }

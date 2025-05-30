@@ -1,7 +1,6 @@
 // js/sidebar.js
 import { fillForm } from "./formFiller.js";
 import { clearSelectedImages, getSelectedImages } from "./imageHandler.js";
-import { processImages } from "./ocrProcessor.js";
 import {
   getExtensionEnabled,
   getSessionId,
@@ -12,11 +11,7 @@ import {
 } from "./session.js";
 import { uiElements, updateButtonStates, updateMobileUI } from "./ui.js";
 // Only import what's needed from mobileCapture now
-import {
-  initMobileCapture,
-  stopMobileSession,
-  initializeIPAddress,
-} from "./mobileCapture.js";
+import { initMobileCapture, initializeIPAddress } from "./mobileCapture.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   // Initialize the application session

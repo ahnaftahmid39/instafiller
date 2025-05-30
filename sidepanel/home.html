@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Key Setup - Smart Form Filler</title>
+    <link rel="stylesheet" href="home.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>🤖 Insta Filler</h1>
+      </div>
+
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- API Key Section -->
+        <div class="section api-key-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">🔑</span>
+              Gemini API Key
+            </div>
+          </div>
+
+          <div class="section-content">
+            <div class="api-key-container">
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="api-key-input"
+                  class="api-key-input"
+                  placeholder="Enter your Gemini API key"
+                />
+                <button id="toggle-visibility" class="toggle-visibility-btn">
+                  👁️
+                </button>
+              </div>
+
+              <div class="button-group">
+                <button id="save-key-btn" class="btn btn-primary" disabled>
+                  <span>💾</span>
+                  Save API Key
+                </button>
+                <button id="test-key-btn" class="btn btn-secondary" disabled>
+                  <span>🔍</span>
+                  Test Key
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="section instructions-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">📝</span>
+              How to Get API Key
+            </div>
+          </div>
+
+          <div class="section-content">
+            <div class="instructions">
+              <ol>
+                <li>
+                  <strong>Visit Google AI Studio</strong>
+                  <p>
+                    Go to
+                    <a href="https://aistudio.google.com/" target="_blank"
+                      >aistudio.google.com</a
+                    >
+                  </p>
+                </li>
+                <li>
+                  <strong>Sign in</strong>
+                  <p>Use your Google account</p>
+                </li>
+                <li>
+                  <strong>Get API Key</strong>
+                  <p>Click "Get API key" in top right</p>
+                </li>
+                <li>
+                  <strong>Create new key</strong>
+                  <p>Choose new or existing project</p>
+                </li>
+                <li>
+                  <strong>Copy key</strong>
+                  <p>Copy the generated key</p>
+                </li>
+                <li>
+                  <strong>Paste above</strong>
+                  <p>Enter key and save</p>
+                </li>
+              </ol>
+
+              <div class="note">
+                <p>
+                  <strong>Secure:</strong> Your API key stays on your device and
+                  connects directly to Google's API.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Section -->
+        <div id="navigation-section" class="section navigation-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-icon">🚀</span>
+              Ready to Go!
+            </div>
+          </div>
+          <div class="section-content">
+            <button id="go-to-main-btn" class="btn btn-primary">
+              <span>📝</span>
+              Go to Form Filler
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Container -->
+      <div id="status-container" class="status-container">
+        <div class="status"></div>
+      </div>
+    </div>
+
+    <script type="module" src="js/home.js"></script>
+  </body>
+</html>
